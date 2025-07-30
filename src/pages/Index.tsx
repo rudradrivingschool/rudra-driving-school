@@ -155,6 +155,15 @@ const Index = () => {
           )}
         </Tabs>
       </div>
+      <footer className='w-full p-4 text-slate-600 text-center text-sm'>
+        © 2025 All rights reserved. Project by{' '}
+        <a
+          href='https://x.com/girishdigge'
+          className='text-indigo-600 hover:text-indigo-500 underline decoration-indigo-300 underline-offset-2 transition-colors duration-200'
+        >
+          Girish Digge
+        </a>
+      </footer>
     </div>
   );
 };
