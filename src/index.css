@@ -1,0 +1,87 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
+
+@layer base {
+  :root {
+    --background: 230 55% 99%; /* crisp white with subtle blue tint */
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 262 83% 58%; /* vibrant purple */
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 200 98% 39%; /* bright cyan */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 210 40% 98%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 142 76% 36%; /* emerald green */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 262 83% 58%;
+
+    --radius: 0.75rem;
+
+    /* Enhanced gradients and glow effects */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--primary)));
+    --shadow-primary: 0 4px 20px -2px hsl(var(--primary) / 0.3);
+    --shadow-accent: 0 4px 20px -2px hsl(var(--accent) / 0.3);
+
+    --sidebar-background: 231 38% 97%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 262 83% 58%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 200 98% 39%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 226 39% 90%;
+    --sidebar-ring: 262 83% 58%;
+  }
+
+  .dark {
+    --background: 240 16% 14%;
+    --foreground:  210 40% 98%;
+    --primary: 255 63% 62%;
+    --secondary: 260 43% 22%;
+    --muted: 250 11% 23%;
+    --accent: 284 37% 35%;
+    --card: 240 19% 19%;
+    --popover: 240 19% 19%;
+    --border: 240 10% 27%;
+    --input: 240 10% 27%;
+    --sidebar-background: 244 13% 17%;
+    --sidebar-primary: 255 58% 39%;
+    --sidebar-accent: 284 37% 24%;
+    --sidebar-border: 240 10% 27%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-gradient-to-br from-paleblue via-palepurple to-palepink bg-no-repeat text-foreground min-h-screen;
+    background-attachment: fixed;
+  }
+
+  .main-gradient-card {
+    @apply bg-gradient-to-br from-white via-paleblue to-palepurple rounded-2xl shadow-md border border-border;
+  }
+}
