@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { Ride } from "@/types/client";
 
@@ -15,7 +14,7 @@ export async function fetchClientRides(
 }> {
   // Step 1: Fetch rides by client_id (primary)
   let { data: rides, error } = await supabase
-    .from("rides")
+    .from("rides" as any)
     .select("*")
     .eq("client_id", clientId);
 
@@ -23,8 +22,8 @@ export async function fetchClientRides(
     // Extract all unique driver_ids for lookup
     const uniqueDriverIds = Array.from(
       new Set(
-        rides
-          .map((r) => r.driver_id)
+        (rides as any[])
+          .map((r: any) => r.driver_id)
           .filter((id): id is string => !!id && typeof id === "string")
       )
     );
@@ -33,12 +32,12 @@ export async function fetchClientRides(
     let driverMap: Record<string, string> = {};
     if (uniqueDriverIds.length > 0) {
       const { data: drivers, error: driverError } = await supabase
-        .from("drivers")
+        .from("drivers" as any)
         .select("id, name")
         .in("id", uniqueDriverIds);
       if (!driverError && drivers) {
-        driverMap = drivers.reduce(
-          (acc: Record<string, string>, d: { id: string; name: string }) => {
+        driverMap = (drivers as any[]).reduce(
+          (acc: Record<string, string>, d: any) => {
             acc[d.id] = d.name;
             return acc;
           },
@@ -47,10 +46,10 @@ export async function fetchClientRides(
       }
     }
 
-    const completed = rides.filter((r) =>
+    const completed = (rides as any[]).filter((r: any) =>
       r.status?.toLowerCase() === "completed"
     ).length;
-    const rideHistory: Ride[] = rides.map((r) => ({
+    const rideHistory: Ride[] = (rides as any[]).map((r: any) => ({
       id: r.id,
       date: new Date(r.date),
       time: r.time ?? "",
@@ -63,7 +62,7 @@ export async function fetchClientRides(
 
   // Step 2: Fallback to legacy rides - by client_name if no rides (client_id is null, use client_name)
   let { data: legacy, error: legacyErr } = await supabase
-    .from("rides")
+    .from("rides" as any)
     .select("*")
     .is("client_id", null)
     .eq("client_name", clientName);
@@ -72,20 +71,20 @@ export async function fetchClientRides(
     // Extract unique driver_ids for legacy rides
     const uniqueDriverIds = Array.from(
       new Set(
-        legacy
-          .map((r) => r.driver_id)
+        (legacy as any[])
+          .map((r: any) => r.driver_id)
           .filter((id): id is string => !!id && typeof id === "string")
       )
     );
     let driverMap: Record<string, string> = {};
     if (uniqueDriverIds.length > 0) {
       const { data: drivers, error: driverError } = await supabase
-        .from("drivers")
+        .from("drivers" as any)
         .select("id, name")
         .in("id", uniqueDriverIds);
       if (!driverError && drivers) {
-        driverMap = drivers.reduce(
-          (acc: Record<string, string>, d: { id: string; name: string }) => {
+        driverMap = (drivers as any[]).reduce(
+          (acc: Record<string, string>, d: any) => {
             acc[d.id] = d.name;
             return acc;
           },
@@ -93,10 +92,10 @@ export async function fetchClientRides(
         );
       }
     }
-    const completed = legacy.filter((r) =>
+    const completed = (legacy as any[]).filter((r: any) =>
       r.status?.toLowerCase() === "completed"
     ).length;
-    const rideHistory: Ride[] = legacy.map((r) => ({
+    const rideHistory: Ride[] = (legacy as any[]).map((r: any) => ({
       id: r.id,
       date: new Date(r.date),
       time: r.time ?? "",

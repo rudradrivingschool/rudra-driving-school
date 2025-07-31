@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -21,7 +20,7 @@ export const useExpenses = () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('expenses')
+        .from('expenses' as any)
         .select(`
           *,
           driver:drivers(name)
@@ -34,7 +33,7 @@ export const useExpenses = () => {
         return;
       }
 
-      const formattedExpenses: Expense[] = data.map(expense => ({
+      const formattedExpenses: Expense[] = (data as any[]).map((expense: any) => ({
         id: expense.id,
         purpose: expense.purpose,
         amount: expense.amount,
@@ -56,7 +55,7 @@ export const useExpenses = () => {
   const addExpense = async (expenseData: Omit<Expense, 'id'>) => {
     try {
       const { data, error } = await supabase
-        .from('expenses')
+        .from('expenses' as any)
         .insert({
           purpose: expenseData.purpose,
           amount: expenseData.amount,
@@ -86,7 +85,7 @@ export const useExpenses = () => {
   const updateExpense = async (expenseId: string, expenseData: Partial<Expense>) => {
     try {
       const { error } = await supabase
-        .from('expenses')
+        .from('expenses' as any)
         .update({
           purpose: expenseData.purpose,
           amount: expenseData.amount,
@@ -115,7 +114,7 @@ export const useExpenses = () => {
   const deleteExpense = async (expenseId: string) => {
     try {
       const { error } = await supabase
-        .from('expenses')
+        .from('expenses' as any)
         .delete()
         .eq('id', expenseId);
 

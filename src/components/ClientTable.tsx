@@ -28,9 +28,18 @@ import {
   ArrowUp,
   ArrowDown,
   UserPlus,
+  Calendar,
+  Mail,
+  MoreVertical,
 } from 'lucide-react';
 import { Client, SortField, SortDirection } from '@/types/client';
 import { ClientPaymentCell } from './ClientPaymentCell';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface ClientTableProps {
   clients: Client[];
@@ -91,7 +100,8 @@ export const ClientTable = ({
 
   return (
     <div className='space-y-4'>
-      <Card>
+      {/* Desktop Table View */}
+      <Card className='hidden lg:block'>
         <CardContent className='p-0'>
           <Table>
             <TableHeader>
@@ -218,16 +228,14 @@ export const ClientTable = ({
                           >
                             <Edit className='w-4 h-4' />
                           </Button>
-                          {userRole === 'superadmin' && (
-                            <Button
-                              size='sm'
-                              variant='outline'
-                              className='text-red-600 hover:text-red-700'
-                              onClick={() => onDelete(client)}
-                            >
-                              <Trash2 className='w-4 h-4' />
-                            </Button>
-                          )}
+                          <Button
+                            size='sm'
+                            variant='outline'
+                            className='text-red-600 hover:text-red-700'
+                            onClick={() => onDelete(client)}
+                          >
+                            <Trash2 className='w-4 h-4' />
+                          </Button>
                         </>
                       )}
                     </div>
@@ -236,39 +244,143 @@ export const ClientTable = ({
               ))}
             </TableBody>
           </Table>
-
-          {clients.length === 0 && (
-            <div className='text-center py-8'>
-              <UserPlus className='w-12 h-12 text-gray-400 mx-auto mb-2' />
-              <h3 className='text-lg font-semibold text-gray-600'>
-                No clients found
-              </h3>
-              <p className='text-gray-500'>
-                Try adjusting your search or filter criteria
-              </p>
-            </div>
-          )}
         </CardContent>
       </Card>
 
+      {/* Mobile Card View */}
+      <div className='block lg:hidden space-y-3'>
+        {clients.map((client) => (
+          <Card key={client.id} className='overflow-hidden'>
+            <CardContent className='p-4'>
+              <div className='space-y-3'>
+                {/* Header Row */}
+                <div className='flex items-start justify-between'>
+                  <div className='flex-1 min-w-0'>
+                    <h3 className='font-semibold text-sm truncate'>
+                      {client.name}
+                    </h3>
+                    <div className='flex items-center gap-1 text-xs text-gray-500 mt-1'>
+                      <Mail className='w-3 h-3 flex-shrink-0' />
+                      <span className='truncate'>{client.email}</span>
+                    </div>
+                  </div>
+                  <div className='flex items-center gap-2 flex-shrink-0'>
+                    <Badge
+                      className={`text-xs ${getStatusColor(client.status)}`}
+                    >
+                      {client.status}
+                    </Badge>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant='outline' size='sm' className='p-2'>
+                          <MoreVertical className='w-4 h-4' />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align='end'>
+                        <DropdownMenuItem onClick={() => onView(client)}>
+                          <Eye className='w-4 h-4 mr-2' />
+                          View Details
+                        </DropdownMenuItem>
+                        {userRole === 'superadmin' && (
+                          <>
+                            <DropdownMenuItem onClick={() => onEdit(client)}>
+                              <Edit className='w-4 h-4 mr-2' />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => onDelete(client)}
+                              className='text-red-600 focus:text-red-600'
+                            >
+                              <Trash2 className='w-4 h-4 mr-2' />
+                              Delete
+                            </DropdownMenuItem>
+                          </>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </div>
+
+                {/* Contact & Package Row */}
+                <div className='flex items-center justify-between text-xs'>
+                  <div className='flex items-center gap-1 text-gray-600'>
+                    <Phone className='w-3 h-3' />
+                    <span>{client.contact}</span>
+                  </div>
+                  <Badge variant='outline' className='text-xs'>
+                    {client.duration}
+                  </Badge>
+                </div>
+
+                {/* Progress Row */}
+                <div className='space-y-2'>
+                  <div className='flex items-center justify-between text-xs'>
+                    <span className='text-gray-600'>
+                      Progress: {client.rides.completed}/{client.rides.total}{' '}
+                      rides
+                    </span>
+                    <span className='font-medium'>
+                      {Math.round(
+                        (client.rides.completed / client.rides.total) * 100
+                      )}
+                      %
+                    </span>
+                  </div>
+                  <Progress
+                    value={(client.rides.completed / client.rides.total) * 100}
+                    className='h-2'
+                  />
+                </div>
+
+                {/* Payment & Date Row */}
+                <div className='flex items-center justify-between text-xs'>
+                  <div className='flex-1 min-w-0 mr-3'>
+                    <ClientPaymentCell client={client} />
+                  </div>
+                  <div className='flex items-center gap-1 text-gray-600 flex-shrink-0'>
+                    <Calendar className='w-3 h-3' />
+                    <span>{format(client.startDate, 'MMM dd, yyyy')}</span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Empty State */}
+      {clients.length === 0 && (
+        <Card>
+          <CardContent className='text-center py-12'>
+            <UserPlus className='w-12 h-12 text-gray-400 mx-auto mb-4' />
+            <h3 className='text-lg font-semibold text-gray-600 mb-2'>
+              No clients found
+            </h3>
+            <p className='text-gray-500 text-sm'>
+              Try adjusting your search or filter criteria
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className='flex items-center justify-between'>
-          <div className='text-sm text-gray-700'>
+        <div className='flex flex-col sm:flex-row items-center justify-between gap-4'>
+          <div className='text-xs sm:text-sm text-gray-700 order-2 sm:order-1'>
             Showing {startIndex + 1} to {Math.min(endIndex, clients.length)} of{' '}
             {clients.length} results
           </div>
 
-          <Pagination>
-            <PaginationContent>
+          <Pagination className='order-1 sm:order-2'>
+            <PaginationContent className='flex-wrap gap-1'>
               <PaginationItem>
                 <PaginationPrevious
                   onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-                  className={
+                  className={`text-xs sm:text-sm ${
                     currentPage === 1
                       ? 'pointer-events-none opacity-50'
                       : 'cursor-pointer'
-                  }
+                  }`}
                 />
               </PaginationItem>
 
@@ -289,7 +401,7 @@ export const ClientTable = ({
                     <PaginationLink
                       onClick={() => onPageChange(pageNumber)}
                       isActive={currentPage === pageNumber}
-                      className='cursor-pointer'
+                      className='cursor-pointer text-xs sm:text-sm px-2 sm:px-3'
                     >
                       {pageNumber}
                     </PaginationLink>
@@ -302,11 +414,11 @@ export const ClientTable = ({
                   onClick={() =>
                     onPageChange(Math.min(totalPages, currentPage + 1))
                   }
-                  className={
+                  className={`text-xs sm:text-sm ${
                     currentPage === totalPages
                       ? 'pointer-events-none opacity-50'
                       : 'cursor-pointer'
-                  }
+                  }`}
                 />
               </PaginationItem>
             </PaginationContent>

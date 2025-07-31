@@ -20,6 +20,7 @@ interface PaymentDialogProps {
   studentName: string;
   existingPayments: any[];
   remainingBalance: number;
+  onPaymentAdded?: () => void;
 }
 
 export const PaymentDialog = ({
@@ -29,6 +30,7 @@ export const PaymentDialog = ({
   studentName,
   existingPayments,
   remainingBalance,
+  onPaymentAdded,
 }: PaymentDialogProps) => {
   const { addPayment } = usePayments();
   const [amount, setAmount] = useState(0);
@@ -89,6 +91,7 @@ export const PaymentDialog = ({
     });
 
     if (success) {
+      onPaymentAdded?.();
       onClose();
       setAmount(0);
       setNotes('');

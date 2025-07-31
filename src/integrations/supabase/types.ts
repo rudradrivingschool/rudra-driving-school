@@ -17,13 +17,13 @@ export type Database = {
       admissions: {
         Row: {
           additional_notes: string | null
+          admission_date: string | null
           advance_amount: number | null
           contact: string | null
           created_at: string | null
           driving_license: string | null
           duration: string | null
           email: string | null
-          end_date: string | null
           fees: number | null
           id: string
           learning_license: string | null
@@ -34,18 +34,17 @@ export type Database = {
           start_date: string | null
           status: string | null
           student_name: string
-          total_rides: number | null
-          updated_at: string | null
+          total_rides: number
         }
         Insert: {
           additional_notes?: string | null
+          admission_date?: string | null
           advance_amount?: number | null
           contact?: string | null
           created_at?: string | null
           driving_license?: string | null
           duration?: string | null
           email?: string | null
-          end_date?: string | null
           fees?: number | null
           id?: string
           learning_license?: string | null
@@ -56,18 +55,17 @@ export type Database = {
           start_date?: string | null
           status?: string | null
           student_name: string
-          total_rides?: number | null
-          updated_at?: string | null
+          total_rides?: number
         }
         Update: {
           additional_notes?: string | null
+          admission_date?: string | null
           advance_amount?: number | null
           contact?: string | null
           created_at?: string | null
           driving_license?: string | null
           duration?: string | null
           email?: string | null
-          end_date?: string | null
           fees?: number | null
           id?: string
           learning_license?: string | null
@@ -78,15 +76,14 @@ export type Database = {
           start_date?: string | null
           status?: string | null
           student_name?: string
-          total_rides?: number | null
-          updated_at?: string | null
+          total_rides?: number
         }
         Relationships: []
       }
       drivers: {
         Row: {
           created_at: string | null
-          email: string | null
+          email: string
           id: string
           join_date: string | null
           license_number: string | null
@@ -101,7 +98,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
-          email?: string | null
+          email: string
           id?: string
           join_date?: string | null
           license_number?: string | null
@@ -116,7 +113,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
-          email?: string | null
+          email?: string
           id?: string
           join_date?: string | null
           license_number?: string | null
@@ -131,38 +128,79 @@ export type Database = {
         }
         Relationships: []
       }
-      payments: {
+      expenses: {
         Row: {
           amount: number
-          client_id: string | null
           created_at: string | null
+          date: string | null
+          driver_id: string | null
           id: string
           notes: string | null
-          payment_date: string | null
-          payment_type: string | null
+          purpose: string
         }
         Insert: {
           amount: number
-          client_id?: string | null
           created_at?: string | null
+          date?: string | null
+          driver_id?: string | null
           id?: string
           notes?: string | null
-          payment_date?: string | null
-          payment_type?: string | null
+          purpose: string
         }
         Update: {
           amount?: number
-          client_id?: string | null
           created_at?: string | null
+          date?: string | null
+          driver_id?: string | null
           id?: string
           notes?: string | null
-          payment_date?: string | null
-          payment_type?: string | null
+          purpose?: string
         }
         Relationships: [
           {
-            foreignKeyName: "payments_client_id_fkey"
-            columns: ["client_id"]
+            foreignKeyName: "expenses_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          admission_id: string
+          amount: number
+          created_at: string
+          id: string
+          notes: string | null
+          payment_date: string
+          payment_type: string
+          updated_at: string
+        }
+        Insert: {
+          admission_id: string
+          amount: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          payment_date?: string
+          payment_type: string
+          updated_at?: string
+        }
+        Update: {
+          admission_id?: string
+          amount?: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          payment_date?: string
+          payment_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_admission_id_fkey"
+            columns: ["admission_id"]
             isOneToOne: false
             referencedRelation: "admissions"
             referencedColumns: ["id"]
@@ -173,6 +211,7 @@ export type Database = {
         Row: {
           car: string | null
           client_id: string | null
+          client_name: string
           created_at: string | null
           date: string
           driver_id: string | null
@@ -180,11 +219,11 @@ export type Database = {
           notes: string | null
           status: string | null
           time: string | null
-          updated_at: string | null
         }
         Insert: {
           car?: string | null
           client_id?: string | null
+          client_name: string
           created_at?: string | null
           date: string
           driver_id?: string | null
@@ -192,11 +231,11 @@ export type Database = {
           notes?: string | null
           status?: string | null
           time?: string | null
-          updated_at?: string | null
         }
         Update: {
           car?: string | null
           client_id?: string | null
+          client_name?: string
           created_at?: string | null
           date?: string
           driver_id?: string | null
@@ -204,7 +243,6 @@ export type Database = {
           notes?: string | null
           status?: string | null
           time?: string | null
-          updated_at?: string | null
         }
         Relationships: [
           {

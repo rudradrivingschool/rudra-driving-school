@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Eye, Plus } from 'lucide-react';
+import { Eye, Plus, X } from 'lucide-react';
 import { Client } from '@/types/client';
 import { PersonalInfoCard } from './client/PersonalInfoCard';
 import { PackageInfoCard } from './client/PackageInfoCard';
@@ -29,7 +29,7 @@ export const ClientDetailsModal = ({
   isOpen,
   onClose,
 }: ClientDetailsModalProps) => {
-  const { getPaymentsByAdmission } = usePayments();
+  const { getPaymentsByAdmission, refetch } = usePayments();
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
 
   // DEBUG LOGS
@@ -50,45 +50,60 @@ export const ClientDetailsModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className='max-w-4xl max-h-[90vh] overflow-y-auto'>
-        <DialogHeader>
-          <div className='flex items-center justify-between'>
-            <div>
-              <DialogTitle className='flex items-center gap-2'>
-                <Eye className='w-5 h-5' />
-                Client Details - {client.name}
+      <DialogContent className='w-[95vw] max-w-4xl h-[95vh] max-h-[95vh] overflow-hidden flex flex-col p-0 pt-2 sm:p-6 [&>button]:z-50'>
+        {/* Mobile Header - Fixed */}
+        <DialogHeader className='flex-shrink-0 px-4 py-4 sm:px-0 sm:py-0 border-b sm:border-b-0 bg-white sticky top-0 z-40'>
+          <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0 pr-10 sm:pr-14'>
+            <div className='flex-1 min-w-0'>
+              <DialogTitle className='flex items-center gap-2 text-base sm:text-lg'>
+                <Eye className='w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0' />
+                <span className='truncate'>Client Details - {client.name}</span>
               </DialogTitle>
-              <DialogDescription>
+              <DialogDescription className='text-xs sm:text-sm mt-1'>
                 Complete information and ride history for this client
               </DialogDescription>
             </div>
-            {totalPaid < client.fees && (
-              <Button
-                onClick={() => setShowPaymentDialog(true)}
-                size='sm'
-                className='bg-green-600 hover:bg-green-700 mr-12'
-              >
-                <Plus className='w-4 h-4 mr-1' />
-                Add Payment
-              </Button>
-            )}
+
+            {/* Action Buttons */}
+            <div className='flex items-center gap-2 flex-shrink-0'>
+              {totalPaid < client.fees && (
+                <Button
+                  onClick={() => setShowPaymentDialog(true)}
+                  size='sm'
+                  className='bg-green-600 hover:bg-green-700 text-xs sm:text-sm px-2 sm:px-3 relative z-30'
+                >
+                  <Plus className='w-3 h-3 sm:w-4 sm:h-4 mr-1' />
+                  <span className='hidden xs:inline'>Add Payment</span>
+                  <span className='xs:hidden'>Add Payment</span>
+                </Button>
+              )}
+            </div>
           </div>
         </DialogHeader>
-        <div className='space-y-6'>
-          <PersonalInfoCard client={client} />
-          <PackageInfoCard client={client} totalPaid={totalPaid} />
-          <LicenseStatusCard client={client} />
-          <RideProgressCard client={client} />
-          <RideHistoryCard rideHistory={client.rideHistory} />
-          {client.additionalNotes && (
-            <AdditionalNotesCard notes={client.additionalNotes} />
-          )}
+
+        {/* Scrollable Content */}
+        <div className='flex-1 overflow-y-auto px-4 sm:px-0'>
+          <div className='space-y-4 sm:space-y-6 py-4 sm:py-0'>
+            <PersonalInfoCard client={client} />
+            <PackageInfoCard client={client} totalPaid={totalPaid} />
+            <LicenseStatusCard client={client} />
+            <RideProgressCard client={client} />
+            <RideHistoryCard rideHistory={client.rideHistory} />
+            {client.additionalNotes && (
+              <AdditionalNotesCard notes={client.additionalNotes} />
+            )}
+          </div>
         </div>
-        <div className='flex justify-end'>
+
+        {/* Desktop Close Button - Fixed at bottom */}
+        <div className='hidden sm:flex justify-end pt-4 border-t flex-shrink-0'>
           <Button variant='outline' onClick={onClose}>
             Close
           </Button>
         </div>
+
+        {/* Mobile Bottom Padding */}
+        <div className='h-4 sm:hidden flex-shrink-0' />
       </DialogContent>
 
       <PaymentDialog
@@ -98,6 +113,7 @@ export const ClientDetailsModal = ({
         studentName={client.name}
         existingPayments={existingPayments}
         remainingBalance={remainingBalance}
+        onPaymentAdded={refetch}
       />
     </Dialog>
   );

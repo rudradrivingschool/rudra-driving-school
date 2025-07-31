@@ -140,12 +140,13 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
     refetch: refetchExpenses,
   } = useExpenses();
 
-  const { payments } = usePayments();
+  const { payments, updatePayment, deletePayment } = usePayments();
   const { clients } = useAdmissions();
 
   // UI state
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingExpense, setEditingExpense] = useState<any | null>(null);
+  const [editingPayment, setEditingPayment] = useState<any | null>(null);
 
   // --- New Expense State (for Add dialog) ---
   const [newExpense, setNewExpense] = useState({
@@ -354,6 +355,10 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
   // For delete confirmation (superadmin only)
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  
+  // Payment delete confirmation
+  const [pendingDeletePaymentId, setPendingDeletePaymentId] = useState<string | null>(null);
+  const [showDeletePaymentModal, setShowDeletePaymentModal] = useState(false);
 
   const handleDeleteExpense = (id: string) => {
     // superadmin only sees confirm; others just delete (but only superadmin can actually delete)
@@ -367,6 +372,43 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
       await deleteExpense(pendingDeleteId);
       setShowDeleteModal(false);
       setPendingDeleteId(null);
+    }
+  };
+
+  // Payment handlers
+  const handleEditPayment = (payment: any) => {
+    setEditingPayment({
+      ...payment,
+      payment_date: new Date(payment.payment_date)
+    });
+  };
+
+  const handleDeletePayment = (id: string) => {
+    if (userRole === 'superadmin') {
+      setPendingDeletePaymentId(id);
+      setShowDeletePaymentModal(true);
+    }
+  };
+
+  const confirmDeletePayment = async () => {
+    if (pendingDeletePaymentId) {
+      await deletePayment(pendingDeletePaymentId);
+      setShowDeletePaymentModal(false);
+      setPendingDeletePaymentId(null);
+    }
+  };
+
+  const handleUpdatePayment = async () => {
+    if (!editingPayment) return;
+    const success = await updatePayment(editingPayment.id, {
+      admission_id: editingPayment.admission_id,
+      amount: editingPayment.amount,
+      payment_type: editingPayment.payment_type,
+      payment_date: format(editingPayment.payment_date, 'yyyy-MM-dd'),
+      notes: editingPayment.notes
+    });
+    if (success) {
+      setEditingPayment(null);
     }
   };
 
@@ -530,6 +572,9 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
           setSelectedYear={setSelectedCollectionsYear}
           payments={payments}
           clients={clients}
+          userRole={userRole}
+          onEdit={handleEditPayment}
+          onDelete={handleDeletePayment}
         />
 
         {/* Monthly Expense Breakdown */}
@@ -791,6 +836,110 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
         </DialogContent>
       </Dialog>
 
+      {/* Edit Payment Dialog */}
+      <Dialog
+        open={!!editingPayment}
+        onOpenChange={(open) => !open && setEditingPayment(null)}
+      >
+        <DialogContent className='max-w-md'>
+          <DialogHeader>
+            <DialogTitle>Edit Payment</DialogTitle>
+            <DialogDescription>Update the payment details</DialogDescription>
+          </DialogHeader>
+          {editingPayment && (
+            <div className='space-y-4 py-4'>
+              <div className='space-y-2'>
+                <Label htmlFor='edit-payment-amount'>Amount (₹)</Label>
+                <Input
+                  id='edit-payment-amount'
+                  type='number'
+                  value={editingPayment.amount}
+                  onChange={(e) =>
+                    setEditingPayment({
+                      ...editingPayment,
+                      amount: parseInt(e.target.value) || 0,
+                    })
+                  }
+                />
+              </div>
+              <div className='space-y-2'>
+                <Label htmlFor='edit-payment-type'>Payment Type</Label>
+                <Select
+                  value={editingPayment.payment_type}
+                  onValueChange={(value) =>
+                    setEditingPayment({ ...editingPayment, payment_type: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="advance">Advance</SelectItem>
+                    <SelectItem value="installment_1">1st Installment</SelectItem>
+                    <SelectItem value="installment_2">2nd Installment</SelectItem>
+                    <SelectItem value="installment_3">3rd Installment</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className='space-y-2'>
+                <Label>Payment Date</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant='outline'
+                      className='w-full justify-start text-left font-normal'
+                    >
+                      <CalendarIcon className='mr-2 h-4 w-4' />
+                      {format(editingPayment.payment_date, 'PPP')}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className='w-auto p-0' align='start'>
+                    <Calendar
+                      mode='single'
+                      selected={editingPayment.payment_date}
+                      onSelect={(date) =>
+                        setEditingPayment({
+                          ...editingPayment,
+                          payment_date: date || new Date(),
+                        })
+                      }
+                      initialFocus
+                      className='p-3 pointer-events-auto'
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className='space-y-2'>
+                <Label htmlFor='edit-payment-notes'>Notes</Label>
+                <Textarea
+                  id='edit-payment-notes'
+                  value={editingPayment.notes || ''}
+                  onChange={(e) =>
+                    setEditingPayment({
+                      ...editingPayment,
+                      notes: e.target.value,
+                    })
+                  }
+                  placeholder='Optional notes...'
+                />
+              </div>
+            </div>
+          )}
+          <div className='flex justify-end gap-2'>
+            <Button variant='outline' onClick={() => setEditingPayment(null)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleUpdatePayment}
+              className='bg-emerald-600 hover:bg-emerald-700'
+            >
+              Update Payment
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Expense DELETE CONFIRM MODAL for superadmin */}
       {userRole === 'superadmin' && (
         <AlertDialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
@@ -808,6 +957,32 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
               </AlertDialogCancel>
               <AlertDialogAction
                 onClick={confirmDeleteExpense}
+                className='bg-red-600 text-white hover:bg-red-700'
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
+
+      {/* Payment DELETE CONFIRM MODAL for superadmin */}
+      {userRole === 'superadmin' && (
+        <AlertDialog open={showDeletePaymentModal} onOpenChange={setShowDeletePaymentModal}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Payment</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete this payment? This action cannot
+                be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setShowDeletePaymentModal(false)}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={confirmDeletePayment}
                 className='bg-red-600 text-white hover:bg-red-700'
               >
                 Delete

@@ -10,7 +10,7 @@ CREATE TABLE public.drivers (
   total_rides INTEGER DEFAULT 0,
   username TEXT UNIQUE NOT NULL,
   password TEXT NOT NULL,
-  role TEXT DEFAULT 'driver' ,
+  role TEXT DEFAULT 'driver' CHECK (role IN ('admin', 'driver')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );

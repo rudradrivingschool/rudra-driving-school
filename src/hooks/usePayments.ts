@@ -19,7 +19,7 @@ export const usePayments = () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('payments')
+        .from('payments' as any)
         .select('*')
         .order('payment_date', { ascending: false });
 
@@ -29,7 +29,7 @@ export const usePayments = () => {
         return;
       }
 
-      const formattedPayments: Payment[] = (data || []).map(payment => ({
+      const formattedPayments: Payment[] = (data as any[] || []).map((payment: any) => ({
         id: payment.id,
         admission_id: payment.admission_id,
         amount: payment.amount,
@@ -49,7 +49,7 @@ export const usePayments = () => {
   const addPayment = async (paymentData: Omit<Payment, 'id'>) => {
     try {
       const { data, error } = await supabase
-        .from('payments')
+        .from('payments' as any)
         .insert({
           admission_id: paymentData.admission_id,
           amount: paymentData.amount,
@@ -76,6 +76,58 @@ export const usePayments = () => {
     }
   };
 
+  const updatePayment = async (id: string, paymentData: Partial<Omit<Payment, 'id'>>) => {
+    try {
+      const { error } = await supabase
+        .from('payments' as any)
+        .update({
+          admission_id: paymentData.admission_id,
+          amount: paymentData.amount,
+          payment_type: paymentData.payment_type,
+          payment_date: paymentData.payment_date,
+          notes: paymentData.notes
+        })
+        .eq('id', id);
+
+      if (error) {
+        console.error('Error updating payment:', error);
+        toast.error('Failed to update payment');
+        return false;
+      }
+
+      toast.success('Payment updated successfully!');
+      await fetchPayments();
+      return true;
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Failed to update payment');
+      return false;
+    }
+  };
+
+  const deletePayment = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('payments' as any)
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.error('Error deleting payment:', error);
+        toast.error('Failed to delete payment');
+        return false;
+      }
+
+      toast.success('Payment deleted successfully!');
+      await fetchPayments();
+      return true;
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Failed to delete payment');
+      return false;
+    }
+  };
+
   const getPaymentsByAdmission = (admissionId: string) => {
     return payments.filter(payment => payment.admission_id === admissionId);
   };
@@ -92,6 +144,8 @@ export const usePayments = () => {
     payments,
     loading,
     addPayment,
+    updatePayment,
+    deletePayment,
     getPaymentsByAdmission,
     getTotalCollected,
     refetch: fetchPayments

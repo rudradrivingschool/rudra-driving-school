@@ -136,7 +136,7 @@ export const RideManager = ({ userRole }: RideManagerProps) => {
       const { data, error } = await supabase
         .from('admissions')
         .select('id, student_name, status')
-        .order('created_at', { ascending: false });
+        .order('student_name', { ascending: true });
 
       if (error) {
         toast.error('Failed to fetch clients');
