@@ -36,6 +36,8 @@ export const ClientForm = ({
     { value: 'LMV-TR', label: 'LMV-TR (LMV-Transport)' },
     { value: 'TRANS', label: 'TRANS (Transport)' },
     { value: '3W-TR', label: '3W-TR (LMV-3 Wheeler TR)' },
+    { value: 'MCWOG + LMV', label: 'MCWOG + LMV' },
+    { value: 'MCWG + LMV', label: 'MCWG + LMV' },
     { value: 'Other', label: 'Other' },
     { value: 'NA', label: 'NA (Only Training)' },
   ];
@@ -323,10 +325,7 @@ export const ClientForm = ({
         <Button variant='outline' onClick={onCancel}>
           Cancel
         </Button>
-        <Button
-          onClick={handleSubmit}
-          className='bg-blue-600 hover:bg-blue-700'
-        >
+        <Button onClick={handleSubmit}>
           {isEdit ? 'Update Client' : 'Add Client'}
         </Button>
       </div>

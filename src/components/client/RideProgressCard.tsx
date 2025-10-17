@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
+import { EnhancedProgress } from "@/components/ui/enhanced-progress";
 import { Client } from "@/types/client";
 
 interface RideProgressCardProps {
@@ -31,7 +31,7 @@ export const RideProgressCard: React.FC<RideProgressCardProps> = ({ client }) =>
             </span>
             <span className="text-sm text-gray-600">{percent}%</span>
           </div>
-          <Progress value={percent} className="h-3" />
+          <EnhancedProgress value={percent} className="h-4" />
           <div className="grid grid-cols-3 gap-4 text-center">
             <div className="p-3 bg-green-50 rounded">
               <div className="text-lg font-bold text-green-600">{completed}</div>

@@ -355,9 +355,11 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
   // For delete confirmation (superadmin only)
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  
+
   // Payment delete confirmation
-  const [pendingDeletePaymentId, setPendingDeletePaymentId] = useState<string | null>(null);
+  const [pendingDeletePaymentId, setPendingDeletePaymentId] = useState<
+    string | null
+  >(null);
   const [showDeletePaymentModal, setShowDeletePaymentModal] = useState(false);
 
   const handleDeleteExpense = (id: string) => {
@@ -379,7 +381,7 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
   const handleEditPayment = (payment: any) => {
     setEditingPayment({
       ...payment,
-      payment_date: new Date(payment.payment_date)
+      payment_date: new Date(payment.payment_date),
     });
   };
 
@@ -405,7 +407,7 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
       amount: editingPayment.amount,
       payment_type: editingPayment.payment_type,
       payment_date: format(editingPayment.payment_date, 'yyyy-MM-dd'),
-      notes: editingPayment.notes
+      notes: editingPayment.notes,
     });
     if (success) {
       setEditingPayment(null);
@@ -548,12 +550,7 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
                 <Button variant='outline' onClick={() => setShowAddForm(false)}>
                   Cancel
                 </Button>
-                <Button
-                  onClick={handleAddExpense}
-                  className='bg-green-600 hover:bg-green-700'
-                >
-                  Add Expense
-                </Button>
+                <Button onClick={handleAddExpense}>Add Expense</Button>
               </div>
             </DialogContent>
           </Dialog>
@@ -561,22 +558,7 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
       </div>
 
       {/* Monthly Breakdowns Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        {/* Monthly Collections Breakdown */}
-        <CollectionsBreakdown
-          months={months}
-          years={years}
-          selectedMonth={selectedCollectionsMonth}
-          setSelectedMonth={setSelectedCollectionsMonth}
-          selectedYear={selectedCollectionsYear}
-          setSelectedYear={setSelectedCollectionsYear}
-          payments={payments}
-          clients={clients}
-          userRole={userRole}
-          onEdit={handleEditPayment}
-          onDelete={handleDeletePayment}
-        />
-
+      <div className='grid grid-cols-1 xl:grid-cols-2 gap-8'>
         {/* Monthly Expense Breakdown */}
         <ExpensesBreakdown
           months={months}
@@ -600,6 +582,21 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
           getCategoryIcon={getCategoryIcon}
           onEdit={setEditingExpense}
           onDelete={handleDeleteExpense}
+        />
+
+        {/* Monthly Collections Breakdown */}
+        <CollectionsBreakdown
+          months={months}
+          years={years}
+          selectedMonth={selectedCollectionsMonth}
+          setSelectedMonth={setSelectedCollectionsMonth}
+          selectedYear={selectedCollectionsYear}
+          setSelectedYear={setSelectedCollectionsYear}
+          payments={payments}
+          clients={clients}
+          userRole={userRole}
+          onEdit={handleEditPayment}
+          onDelete={handleDeletePayment}
         />
       </div>
 
@@ -634,9 +631,9 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
       /> */}
 
       {/* Charts */}
-      <div className="bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100 p-6 rounded-xl border border-slate-200">
-        <h3 className="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
-          <BarChart className="w-5 h-5" />
+      <div className='bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100 p-6 rounded-xl border border-slate-200'>
+        <h3 className='text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2'>
+          <BarChart className='w-5 h-5' />
           Expense Analytics
         </h3>
         <ExpensesCharts
@@ -646,12 +643,12 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
       </div>
 
       {/* All Expenses Section */}
-      <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-        <h3 className="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
-          <FileText className="w-5 h-5" />
+      <div className='bg-white p-6 rounded-xl border border-slate-200 shadow-sm'>
+        <h3 className='text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2'>
+          <FileText className='w-5 h-5' />
           All Expenses
         </h3>
-        
+
         {/* Filter/Search Bar - now filters all expenses */}
         <ExpensesFilterBar
           searchTerm={searchTerm}
@@ -867,18 +864,27 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
                 <Select
                   value={editingPayment.payment_type}
                   onValueChange={(value) =>
-                    setEditingPayment({ ...editingPayment, payment_type: value })
+                    setEditingPayment({
+                      ...editingPayment,
+                      payment_type: value,
+                    })
                   }
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="advance">Advance</SelectItem>
-                    <SelectItem value="installment_1">1st Installment</SelectItem>
-                    <SelectItem value="installment_2">2nd Installment</SelectItem>
-                    <SelectItem value="installment_3">3rd Installment</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
+                    <SelectItem value='advance'>Advance</SelectItem>
+                    <SelectItem value='installment_1'>
+                      1st Installment
+                    </SelectItem>
+                    <SelectItem value='installment_2'>
+                      2nd Installment
+                    </SelectItem>
+                    <SelectItem value='installment_3'>
+                      3rd Installment
+                    </SelectItem>
+                    <SelectItem value='other'>Other</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -968,7 +974,10 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
 
       {/* Payment DELETE CONFIRM MODAL for superadmin */}
       {userRole === 'superadmin' && (
-        <AlertDialog open={showDeletePaymentModal} onOpenChange={setShowDeletePaymentModal}>
+        <AlertDialog
+          open={showDeletePaymentModal}
+          onOpenChange={setShowDeletePaymentModal}
+        >
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Delete Payment</AlertDialogTitle>
@@ -978,7 +987,9 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setShowDeletePaymentModal(false)}>
+              <AlertDialogCancel
+                onClick={() => setShowDeletePaymentModal(false)}
+              >
                 Cancel
               </AlertDialogCancel>
               <AlertDialogAction

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Driver } from '@/types/driver';
 
@@ -141,18 +142,19 @@ export const DriverForm = ({
         </div>
 
         <div className='space-y-2'>
-          <Label htmlFor='role'>Role</Label>
-          <select
-            id='role'
+          <Label>Role</Label>
+          <Select
             value={formData.role}
-            onChange={(e) =>
-              handleInputChange('role', e.target.value as 'admin' | 'driver')
-            }
-            className='w-full h-10 px-3 rounded-md border border-input bg-background text-sm'
+            onValueChange={(v) => handleInputChange('role', v as 'admin' | 'driver')}
           >
-            <option value='driver'>Driver</option>
-            <option value='admin'>Admin</option>
-          </select>
+            <SelectTrigger>
+              <SelectValue placeholder='Select role' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='driver'>Driver</SelectItem>
+              <SelectItem value='admin'>Admin</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div className='space-y-2'>
@@ -190,7 +192,6 @@ export const DriverForm = ({
         </Button>
         <Button
           type='submit'
-          className='bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700'
         >
           {isEdit ? 'Update Driver' : 'Add Driver'}
         </Button>

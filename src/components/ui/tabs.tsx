@@ -1,8 +1,8 @@
-import * as React from "react"
-import * as TabsPrimitive from "@radix-ui/react-tabs"
-import { cn } from "@/lib/utils"
+import * as React from 'react';
+import * as TabsPrimitive from '@radix-ui/react-tabs';
+import { cn } from '@/lib/utils';
 
-const Tabs = TabsPrimitive.Root
+const Tabs = TabsPrimitive.Root;
 
 const TabsList = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.List>,
@@ -11,13 +11,13 @@ const TabsList = React.forwardRef<
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      "flex flex-row flex-wrap justify-start items-center gap-1 sm:flex-nowrap sm:justify-center inline-flex h-auto min-h-[48px] sm:h-12 sm:min-h-0 sm:items-center sm:gap-0 rounded-xl bg-gradient-to-r from-paleblue via-palepurple to-palepink p-1 text-muted-foreground shadow ring-1 ring-border mb-2",
+      'flex-row flex-wrap justify-start items-center gap-1 sm:flex-nowrap sm:justify-center inline-flex h-auto min-h-[48px] sm:h-12 sm:min-h-0 sm:items-center sm:gap-0 rounded-xl bg-gradient-to-r from-paleblue via-palepurple to-palepink p-1 text-muted-foreground shadow ring-1 ring-border mb-2',
       className
     )}
     {...props}
   />
-))
-TabsList.displayName = TabsPrimitive.List.displayName
+));
+TabsList.displayName = TabsPrimitive.List.displayName;
 
 const TabsTrigger = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Trigger>,
@@ -26,13 +26,21 @@ const TabsTrigger = React.forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      "inline-flex items-center justify-center whitespace-nowrap rounded-xl px-4 py-2 text-base font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-primary data-[state=active]:scale-105 data-[state=active]:ring-2 data-[state=active]:ring-accent border-none",
+      'inline-flex items-center justify-center whitespace-nowrap rounded-xl px-4 py-2 text-base font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border-none',
+      // Active state with purple to pale pink radial gradient
+      'data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-400 data-[state=active]:to-pink-400',
+      'data-[state=active]:shadow-xl data-[state=active]:shadow-purple-400/25',
+      'data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:scale-105',
+      // Subtle inner glow effect
+      'data-[state=active]:ring-1 data-[state=active]:ring-white/15',
+      // Enhanced hover state for active tabs
+      'data-[state=active]:hover:shadow-2xl data-[state=active]:hover:shadow-purple-400/30',
       className
     )}
     {...props}
   />
-))
-TabsTrigger.displayName = TabsPrimitive.Trigger.displayName
+));
+TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
 
 const TabsContent = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Content>,
@@ -41,12 +49,12 @@ const TabsContent = React.forwardRef<
   <TabsPrimitive.Content
     ref={ref}
     className={cn(
-      "mt-2 ring-offset-background animate-fade-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+      'mt-2 ring-offset-background animate-fade-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
       className
     )}
     {...props}
   />
-))
-TabsContent.displayName = TabsPrimitive.Content.displayName
+));
+TabsContent.displayName = TabsPrimitive.Content.displayName;
 
-export { Tabs, TabsList, TabsTrigger, TabsContent }
+export { Tabs, TabsList, TabsTrigger, TabsContent };

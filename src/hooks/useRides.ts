@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { updateAdmissionRideProgress } from './useAdmissionRideProgress';
+import { format as formatDate } from 'date-fns';
 
 // Ride type for this hook
 export interface Ride {
@@ -9,6 +10,7 @@ export interface Ride {
   clientName: string;
   driverName: string;
   driverId?: string;
+  client_id?: string;
   car: string;
   date: Date;
   time: string;
@@ -81,8 +83,9 @@ export const useRides = ({
               ? drivers.find((d) => d.id === row.driver_id)?.name || 'Unknown'
               : 'Unknown',
           driverId: row.driver_id,
+          client_id: row.client_id,
           car: row.car || '',
-          date: row.date ? new Date(row.date) : new Date(),
+          date: row.date ? new Date(`${row.date}T00:00:00`) : new Date(),
           time: row.time || '',
           status: 'completed',
           notes: row.notes || '',
@@ -99,21 +102,27 @@ export const useRides = ({
       driverName,
       car,
       notes,
+      customDate,
+      customTime,
     }: {
       clientName: string;
       driverName: string;
       car: string;
       notes?: string;
+      customDate?: Date;
+      customTime?: string;
     }) => {
       const client_id = clientNameToId[clientName] || null;
       const driver = drivers.find((d) => d.name === driverName);
-      const now = new Date();
-      const todayStr = now.toISOString().split('T')[0];
-      const timeStr = now.toLocaleTimeString('en-US', {
+      
+      // Use custom date/time if provided, otherwise use current
+      const dateToUse = customDate || new Date();
+      const timeToUse = customTime || dateToUse.toLocaleTimeString('en-US', {
         hour: 'numeric',
         minute: '2-digit',
         hour12: true,
       });
+      const dateStr = formatDate(dateToUse, 'yyyy-MM-dd');
       setIsLoading(true);
       const { error } = await supabase.from('rides').insert({
         client_id,
@@ -121,8 +130,8 @@ export const useRides = ({
         driver_id: driver?.id,
         car,
         notes,
-        date: todayStr,
-        time: timeStr,
+        date: dateStr,
+        time: timeToUse,
         status: 'completed',
       });
       setIsLoading(false);
@@ -154,22 +163,35 @@ export const useRides = ({
         driverName: string;
         car: string;
         notes?: string;
+        customDate?: Date;
+        customTime?: string;
       }
     ) => {
       try {
         const client_id = clientNameToId[rideData.clientName] || null;
         const driver = drivers.find((d) => d.name === rideData.driverName);
 
+        // Prepare update object
+        const updateData: any = {
+          client_id,
+          client_name: rideData.clientName,
+          driver_id: driver?.id,
+          car: rideData.car,
+          notes: rideData.notes,
+        };
+
+        // Include custom date/time if provided (superadmin feature)
+        if (rideData.customDate) {
+          updateData.date = formatDate(rideData.customDate, 'yyyy-MM-dd');
+        }
+        if (rideData.customTime) {
+          updateData.time = rideData.customTime;
+        }
+
         setIsLoading(true);
         const { error } = await supabase
           .from('rides')
-          .update({
-            client_id,
-            client_name: rideData.clientName,
-            driver_id: driver?.id,
-            car: rideData.car,
-            notes: rideData.notes,
-          })
+          .update(updateData)
           .eq('id', rideId);
 
         if (error) {

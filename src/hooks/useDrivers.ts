@@ -22,20 +22,32 @@ export const useDrivers = () => {
         return;
       }
 
-      const formattedDrivers: Driver[] = data.map(driver => ({
-        id: driver.id,
-        name: driver.name,
-        phone: driver.phone || '',
-        email: driver.email,
-        licenseNumber: driver.license_number || '',
-        joinDate: driver.join_date || '',
-        status: (driver.status as 'active' | 'inactive') || 'active',
-        totalRides: driver.total_rides || 0,
-        rides: [], // TODO: Fetch from rides table
-        username: driver.username,
-        password: driver.password,
-        role: (driver.role as 'admin' | 'driver') || 'driver'
-      }));
+      // Fetch actual ride counts for each driver
+      const formattedDrivers: Driver[] = await Promise.all(
+        data.map(async (driver) => {
+          const { data: ridesData, error: ridesError } = await supabase
+            .from('rides')
+            .select('id, status')
+            .eq('driver_id', driver.id);
+
+          const actualTotalRides = ridesData?.length || 0;
+
+          return {
+            id: driver.id,
+            name: driver.name,
+            phone: driver.phone || '',
+            email: driver.email,
+            licenseNumber: driver.license_number || '',
+            joinDate: driver.join_date || '',
+            status: (driver.status as 'active' | 'inactive') || 'active',
+            totalRides: actualTotalRides,
+            rides: [], // Could populate with actual rides if needed
+            username: driver.username,
+            password: driver.password,
+            role: (driver.role as 'admin' | 'driver') || 'driver'
+          };
+        })
+      );
 
       setDrivers(formattedDrivers);
     } catch (error) {

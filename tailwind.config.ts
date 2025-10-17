@@ -72,6 +72,10 @@ export default {
         blueFade: "linear-gradient(99deg, #f4f6fc 0%, #dae7fa 38%, #f4edfc 100%)",
         softViolet: "#c7c3ed"
       },
+      fontFamily: {
+        sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["Saira Condensed", "Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+      },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',

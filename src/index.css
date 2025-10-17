@@ -38,11 +38,13 @@
     --radius: 0.75rem;
 
     /* Enhanced gradients and glow effects */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
     --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--primary)));
-    --shadow-primary: 0 4px 20px -2px hsl(var(--primary) / 0.3);
-    --shadow-accent: 0 4px 20px -2px hsl(var(--accent) / 0.3);
-
+    --gradient-app: radial-gradient(1000px 500px at 85% -10%, hsl(var(--primary) / 0.15), transparent 60%),
+                    radial-gradient(800px 400px at 10% 110%, hsl(var(--accent) / 0.12), transparent 60%),
+                    linear-gradient(180deg, hsl(var(--background)), hsl(var(--background)));
+    --shadow-primary: 0 10px 30px -10px hsl(var(--primary) / 0.35);
+    --shadow-accent: 0 10px 30px -10px hsl(var(--accent) / 0.35);
     --sidebar-background: 231 38% 97%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 262 83% 58%;
@@ -77,8 +79,12 @@
   }
 
   body {
-    @apply bg-gradient-to-br from-paleblue via-palepurple to-palepink bg-no-repeat text-foreground min-h-screen;
+    @apply text-foreground min-h-screen font-sans;
+    background-color: hsl(var(--background));
+    background-image: var(--gradient-app);
     background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
   }
 
   .main-gradient-card {

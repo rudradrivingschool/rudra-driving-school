@@ -14,6 +14,7 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { usePayments } from '@/hooks/usePayments';
 
 interface AdmissionRow {
   id: string;
@@ -50,6 +51,11 @@ const MobileAdmissionCard: React.FC<{ admission: AdmissionRow }> = ({
     admission.total_rides > 0
       ? (admission.rides_completed / admission.total_rides) * 100
       : 0;
+
+  const { getPaymentsByAdmission } = usePayments();
+  const payments = getPaymentsByAdmission(admission.id);
+  const totalPaid = payments.reduce((sum, p) => sum + Number(p.amount), 0);
+  const remaining = Math.max(0, Number(admission.fees || 0) - totalPaid);
 
   return (
     <Card className='mb-4 shadow-sm'>
@@ -89,15 +95,15 @@ const MobileAdmissionCard: React.FC<{ admission: AdmissionRow }> = ({
           <div className='bg-gray-50 p-2 rounded'>
             <div className='text-xs text-gray-500'>Fees</div>
             <div className='font-semibold flex items-center'>
-              <CreditCard className='w-3 h-3 mr-1' />
-              {admission.fees}
+              <CreditCard className='w-3 h-3 mr-1 text-green-500' />
+              <div className='text-green-500'>₹{admission.fees}</div>
             </div>
           </div>
           <div className='bg-gray-50 p-2 rounded'>
-            <div className='text-xs text-gray-500'>Advance</div>
+            <div className='text-xs text-gray-500'>Remaining Fees</div>
             <div className='font-semibold flex items-center'>
-              <CreditCard className='w-3 h-3 mr-1' />
-              {admission.advance_amount}
+              <CreditCard className='w-3 h-3 mr-1 text-red-500' />
+              <div className='text-red-500'>₹{remaining.toLocaleString()}</div>
             </div>
           </div>
         </div>
@@ -140,6 +146,14 @@ export const Reports: React.FC = () => {
   const [admissions, setAdmissions] = useState<AdmissionRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<'active' | 'completed'>('active');
+
+  const { getPaymentsByAdmission } = usePayments();
+  const calculateRemaining = (admission: AdmissionRow) => {
+    const payments = getPaymentsByAdmission(admission.id);
+    const totalPaid = payments.reduce((sum, p) => sum + Number(p.amount), 0);
+    const remaining = Number(admission.fees || 0) - totalPaid;
+    return remaining > 0 ? remaining : 0;
+  };
 
   useEffect(() => {
     async function fetchAdmissionsWithRides() {
@@ -292,7 +306,7 @@ export const Reports: React.FC = () => {
                   Fees
                 </th>
                 <th className='text-left p-3 font-medium text-gray-700'>
-                  Advance Amt
+                  Remaining Fees
                 </th>
                 <th className='text-left p-3 font-medium text-gray-700'>
                   Rides Completed
@@ -313,11 +327,15 @@ export const Reports: React.FC = () => {
                   <td className='p-3'>{adm.status}</td>
                   <td className='p-3'>{adm.contact}</td>
                   <td className='p-3'>{adm.license_type}</td>
-                  <td className='p-3'>{adm.fees}</td>
-                  <td className='p-3'>{adm.advance_amount}</td>
+                  <td className='p-3 text-green-500'>₹{adm.fees}</td>
+                  <td className='p-3 text-red-500'>
+                    ₹{calculateRemaining(adm).toLocaleString()}
+                  </td>
                   <td className='p-3'>{adm.rides_completed}</td>
                   <td className='p-3'>{adm.total_rides}</td>
-                  <td className='p-3'>{adm.ride_dates}</td>
+                  <td className='p-3'>
+                    <div className='text-xs'>{adm.ride_dates}</div>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -349,7 +367,7 @@ export const Reports: React.FC = () => {
           value={tab}
           onValueChange={(val) => setTab(val as 'active' | 'completed')}
         >
-          <TabsList className='mb-4 flex w-full max-w-xs'>
+          <TabsList className='mb-4 flex w-full max-w-sm'>
             <TabsTrigger value='active' className='flex-1'>
               Active Clients
             </TabsTrigger>

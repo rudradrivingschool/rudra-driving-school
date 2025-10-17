@@ -26,6 +26,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
+import { formatTime12h } from '@/lib/utils';
 
 interface DriverDetailsModalProps {
   driver: import('@/types/driver').Driver | null;
@@ -253,7 +254,7 @@ export const DriverDetailsModal = ({
                                 </div>
                                 <div className='flex items-center gap-1'>
                                   <Clock className='w-3 h-3' />
-                                  {ride.time}
+                                  {formatTime12h(ride.time)}
                                 </div>
                               </div>
                               {ride.notes && (
@@ -305,7 +306,7 @@ export const DriverDetailsModal = ({
                                           ).toLocaleDateString()
                                         : '-'}
                                       <Clock className='w-3 h-3 ml-2' />
-                                      {ride.time}
+                                      {formatTime12h(ride.time)}
                                     </div>
                                   </TableCell>
                                   <TableCell>

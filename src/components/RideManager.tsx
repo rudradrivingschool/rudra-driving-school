@@ -22,6 +22,8 @@ import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { useRides } from '@/hooks/useRides';
 import { RideStatsBanner } from './RideStatsBanner';
+import { useAuth } from '@/contexts/AuthContext';
+import { formatTime12h } from '@/lib/utils';
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -44,6 +46,7 @@ interface Ride {
   time: string;
   status: 'pending' | 'completed' | 'cancelled';
   notes?: string;
+  client_id?: string;
 }
 
 interface Client {
@@ -85,6 +88,7 @@ export const RideManager = ({ userRole }: RideManagerProps) => {
     new Date()
   );
   const [isLoadingClients, setIsLoadingClients] = useState(false);
+  const [clientProgress, setClientProgress] = useState<Record<string, { completed: number; total: number }>>({});
 
   // Fetch drivers (same as before)
   useEffect(() => {
@@ -117,41 +121,56 @@ export const RideManager = ({ userRole }: RideManagerProps) => {
     fetchDrivers();
   }, []);
 
-  // Use the enhanced rides hook with update and delete functionality
+// Use the enhanced rides hook with update and delete functionality
   const { rides, isLoading, addRide, updateRide, deleteRide, clientNameToId } =
     useRides({ drivers });
 
-  // Get current logged in driver (defaulting to first driver for demo)
-  const currentDriver = drivers[0] || { id: '', name: '' };
+  // Auth user to determine current driver
+  const { user } = useAuth();
+
+  // Prefer logged-in driver (by id or name), fallback to first
+  const currentDriver =
+    (user
+      ? drivers.find((d) => d.id === (user as any).id) ||
+        drivers.find((d) => d.name === (user as any).name)
+      : undefined) ||
+    drivers[0] ||
+    { id: '', name: '' };
   const cars: Car[] = [
     { id: '1', name: 'Tata Harrier' },
     { id: '2', name: 'MS Baleno' },
     { id: '3', name: 'MS SX4' },
   ];
 
-  // Fetch clients from admissions table (active/inactive)
+  // Fetch clients from admissions table (active/inactive) with progress
   useEffect(() => {
     const fetchClients = async () => {
       setIsLoadingClients(true);
       const { data, error } = await supabase
         .from('admissions')
-        .select('id, student_name, status')
+        .select('id, student_name, status, rides_completed, total_rides')
         .order('student_name', { ascending: true });
 
       if (error) {
         toast.error('Failed to fetch clients');
         setClients([]);
       } else {
-        setClients(
-          (data || []).map((row: any) => ({
+        const progressMap: Record<string, { completed: number; total: number }> = {};
+        const clientsList = (data || []).map((row: any) => {
+          progressMap[row.id] = {
+            completed: row.rides_completed || 0,
+            total: row.total_rides || 0,
+          };
+          return {
             id: row.id,
             name: row.student_name,
-            status:
-              row.status && row.status.toLowerCase() === 'active'
-                ? 'active'
-                : 'inactive',
-          }))
-        );
+            status: (row.status && row.status.toLowerCase() === 'active'
+              ? 'active'
+              : 'inactive') as 'active' | 'inactive',
+          };
+        });
+        setClients(clientsList);
+        setClientProgress(progressMap);
       }
       setIsLoadingClients(false);
     };
@@ -184,75 +203,117 @@ export const RideManager = ({ userRole }: RideManagerProps) => {
   );
 
   // RideCard displays each ride (with superadmin actions)
-  const RideCard = ({ ride }: { ride: Ride }) => (
-    <Card className='hover:shadow-lg transition-shadow'>
-      <CardHeader className='pb-3'>
-        <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3'>
-          <div>
-            <CardTitle className='text-base sm:text-lg'>
-              {ride.clientName}
-            </CardTitle>
-            <CardDescription className='flex items-center gap-2 mt-1'>
-              <span className='inline-flex items-center gap-1'>
-                <User className='w-3 h-3' />
-                Driver: {ride.driverName}
-              </span>
-            </CardDescription>
-          </div>
-          <div className='text-right mt-2 sm:mt-0'>
-            <div className='text-sm font-medium'>{ride.time}</div>
-            <div className='text-xs text-gray-500'>
-              {ride.date.toLocaleDateString()}
+  const RideCard = ({ ride }: { ride: Ride }) => {
+    const progress = ride.client_id ? clientProgress[ride.client_id] : null;
+    const currentRide = progress ? progress.completed : 0;
+    const totalRides = progress ? progress.total : 0;
+    const remaining = totalRides - currentRide;
+
+    return (
+      <Card className='group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-l-4 border-l-primary/40 hover:border-l-primary overflow-hidden'>
+        <CardContent className='p-4'>
+          {/* Main Content Grid */}
+          <div className='grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-4 items-start'>
+            {/* Left Section - Client & Details */}
+            <div className='space-y-3'>
+              {/* Client Name & Driver */}
+              <div>
+                <h3 className='text-lg font-bold text-gray-900 mb-1 group-hover:text-primary transition-colors'>
+                  {ride.clientName}
+                </h3>
+                <div className='flex items-center gap-2 text-sm text-gray-600'>
+                  <User className='w-4 h-4' />
+                  <span>{ride.driverName}</span>
+                </div>
+              </div>
+
+              {/* Car & Time Info Row */}
+              <div className='flex flex-wrap items-center gap-3 text-sm'>
+                {/* Car */}
+                <div className='flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-full'>
+                  <Car className='w-4 h-4 text-blue-600' />
+                  <span className='font-medium text-blue-900'>{ride.car}</span>
+                </div>
+                
+                {/* Date & Time */}
+                <div className='flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full'>
+                  <CalendarIcon className='w-4 h-4 text-gray-600' />
+                  <span className='font-medium text-gray-700'>{formatTime12h(ride.time)}</span>
+                  <span className='text-gray-400'>•</span>
+                  <span className='text-gray-600 text-xs'>{ride.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                </div>
+              </div>
+
+              {/* Notes - Compact */}
+              {ride.notes && (
+                <div className='p-2.5 bg-amber-50/70 border-l-2 border-amber-400 rounded text-xs text-amber-900'>
+                  <span className='font-semibold'>Note:</span> {ride.notes}
+                </div>
+              )}
             </div>
+
+            {/* Right Section - Progress Badge */}
+            {progress && totalRides > 0 && (
+              <div className='flex lg:flex-col items-center lg:items-end gap-2'>
+                <div className='relative group/badge hover:scale-110 transition-transform duration-300'>
+                  {/* F1 Racing Style Badge */}
+                  <div className='bg-gradient-to-br from-red-600 via-red-500 to-orange-500 text-white px-5 py-3 rounded-xl shadow-lg relative overflow-hidden'>
+                    {/* Animated Background Effect */}
+                    <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/badge:translate-x-full transition-transform duration-700'></div>
+                    
+                    {/* Content */}
+                    <div className='relative z-10 text-center'>
+                      <div className='flex items-baseline justify-center gap-1 mb-1'>
+                        <span className='text-3xl font-black leading-none'>{currentRide}</span>
+                        <span className='text-sm font-bold opacity-90'>/{totalRides}</span>
+                      </div>
+                      <div className='text-[10px] font-bold uppercase tracking-widest opacity-90'>
+                        Rides Done
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Remaining Badge */}
+                  <div className='absolute -bottom-2 -right-2 bg-white text-red-600 px-2 py-1 rounded-full text-xs font-bold shadow-md border-2 border-red-600'>
+                    {remaining} left
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-      </CardHeader>
-      <CardContent className='space-y-3 sm:space-y-4'>
-        <div className='flex items-center gap-2 text-sm'>
-          <Car className='w-4 h-4 text-blue-600' />
-          <span className='font-medium'>Car:</span>
-          <span>{ride.car}</span>
-        </div>
-        {ride.notes && (
-          <div className='p-3 bg-blue-50 rounded-lg'>
-            <p className='text-sm text-blue-800'>
-              <strong>Notes:</strong> {ride.notes}
-            </p>
-          </div>
-        )}
-        {/* Superadmin Actions */}
-        {userRole === 'superadmin' && (
-          <div className='flex gap-2 pt-2'>
-            {/* Edit Button */}
-            <Button
-              variant='outline'
-              size='sm'
-              className='text-xs'
-              onClick={() => handleEditRide(ride)}
-              disabled={isLoading}
-            >
-              <Edit className='w-3 h-3 mr-1' />
-              <span>Edit</span>
-            </Button>
-            {/* Delete Button */}
-            <Button
-              variant='outline'
-              size='sm'
-              className='text-xs text-red-600 hover:text-red-700 hover:bg-red-50'
-              onClick={() => {
-                setRideToDelete(ride);
-                setShowDeleteModal(true);
-              }}
-              disabled={isLoading}
-            >
-              <Trash2 className='w-3 h-3 mr-1' />
-              <span>Delete</span>
-            </Button>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
+
+          {/* Superadmin Actions - Compact */}
+          {userRole === 'superadmin' && (
+            <div className='flex gap-2 mt-4 pt-3 border-t border-gray-100'>
+              <Button
+                variant='ghost'
+                size='sm'
+                className='flex-1 h-8 text-xs hover:bg-blue-50 hover:text-blue-700'
+                onClick={() => handleEditRide(ride)}
+                disabled={isLoading}
+              >
+                <Edit className='w-3.5 h-3.5 mr-1.5' />
+                Edit
+              </Button>
+              <Button
+                variant='ghost'
+                size='sm'
+                className='flex-1 h-8 text-xs text-red-600 hover:bg-red-50 hover:text-red-700'
+                onClick={() => {
+                  setRideToDelete(ride);
+                  setShowDeleteModal(true);
+                }}
+                disabled={isLoading}
+              >
+                <Trash2 className='w-3.5 h-3.5 mr-1.5' />
+                Delete
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
 
   // Logic for updating a ride: superadmin only
   const handleEditRide = (ride: Ride) => {
@@ -281,12 +342,14 @@ export const RideManager = ({ userRole }: RideManagerProps) => {
     }
   };
 
-  // Update ride handler using the hook
+// Update ride handler using the hook
   const handleUpdateRide = async (rideData: {
     clientName: string;
     driverName: string;
     car: string;
     notes?: string;
+    customDate?: Date;
+    customTime?: string;
   }) => {
     if (!rideToEdit) return false;
 
@@ -308,12 +371,14 @@ export const RideManager = ({ userRole }: RideManagerProps) => {
     }
   };
 
-  // Handle save ride (for new rides)
+// Handle save ride (for new rides)
   const handleSaveRide = async (rideData: {
     clientName: string;
     driverName: string;
     car: string;
     notes?: string;
+    customDate?: Date;
+    customTime?: string;
   }) => {
     try {
       const result = await addRide(rideData);

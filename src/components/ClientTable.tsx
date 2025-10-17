@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+import { EnhancedProgress } from '@/components/ui/enhanced-progress';
 import {
   Table,
   TableBody,
@@ -183,11 +183,11 @@ export const ClientTable = ({
                       <div className='text-sm'>
                         {client.rides.completed}/{client.rides.total} rides
                       </div>
-                      <Progress
+                      <EnhancedProgress
                         value={
                           (client.rides.completed / client.rides.total) * 100
                         }
-                        className='h-2 w-20'
+                        className='h-3 w-24'
                       />
                       <div className='text-xs text-gray-500'>
                         {Math.round(
@@ -326,9 +326,9 @@ export const ClientTable = ({
                       %
                     </span>
                   </div>
-                  <Progress
+                  <EnhancedProgress
                     value={(client.rides.completed / client.rides.total) * 100}
-                    className='h-2'
+                    className='h-3'
                   />
                 </div>
 
