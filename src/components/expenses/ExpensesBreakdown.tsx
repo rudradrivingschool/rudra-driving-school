@@ -48,7 +48,7 @@ export const ExpensesBreakdown: React.FC<ExpensesBreakdownProps> = ({
 }) => {
   const totalExpenses = breakdownExpenses.reduce(
     (sum, payment) => sum + payment.amount,
-    0
+    0,
   );
 
   return (
@@ -80,7 +80,7 @@ export const ExpensesBreakdown: React.FC<ExpensesBreakdownProps> = ({
             value={selectedMonth.toString()}
             onValueChange={(val) => setSelectedMonth(Number(val))}
           >
-            <SelectTrigger className='w-full sm:w-[140px] bg-white border-red-200'>
+            <SelectTrigger className='w-full sm:w-[140px] max-w-full bg-white border-red-200'>
               <SelectValue placeholder='Month' />
             </SelectTrigger>
             <SelectContent>
@@ -95,7 +95,7 @@ export const ExpensesBreakdown: React.FC<ExpensesBreakdownProps> = ({
             value={selectedYear.toString()}
             onValueChange={(val) => setSelectedYear(Number(val))}
           >
-            <SelectTrigger className='w-full sm:w-[110px] bg-white border-red-200'>
+            <SelectTrigger className='w-full sm:w-[110px] max-w-full bg-white border-red-200'>
               <SelectValue placeholder='Year' />
             </SelectTrigger>
             <SelectContent>

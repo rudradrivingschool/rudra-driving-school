@@ -96,13 +96,13 @@ export const CollectionsBreakdown: React.FC<CollectionsBreakdownProps> = ({
       .sort(
         (a, b) =>
           new Date(b.payment_date).getTime() -
-          new Date(a.payment_date).getTime()
+          new Date(a.payment_date).getTime(),
       );
   }, [payments, clients, selectedMonth, selectedYear]);
 
   const totalCollected = breakdownPayments.reduce(
     (sum, payment) => sum + payment.amount,
-    0
+    0,
   );
 
   return (
@@ -134,7 +134,7 @@ export const CollectionsBreakdown: React.FC<CollectionsBreakdownProps> = ({
             value={selectedMonth.toString()}
             onValueChange={(val) => setSelectedMonth(Number(val))}
           >
-            <SelectTrigger className='w-full sm:w-[140px] bg-white border-emerald-200'>
+            <SelectTrigger className='w-full sm:w-[140px] max-w-full bg-white border-emerald-200'>
               <SelectValue placeholder='Month' />
             </SelectTrigger>
             <SelectContent>
@@ -149,7 +149,7 @@ export const CollectionsBreakdown: React.FC<CollectionsBreakdownProps> = ({
             value={selectedYear.toString()}
             onValueChange={(val) => setSelectedYear(Number(val))}
           >
-            <SelectTrigger className='w-full sm:w-[110px] bg-white border-emerald-200'>
+            <SelectTrigger className='w-full sm:w-[110px] max-w-full bg-white border-emerald-200'>
               <SelectValue placeholder='Year' />
             </SelectTrigger>
             <SelectContent>
@@ -195,7 +195,7 @@ export const CollectionsBreakdown: React.FC<CollectionsBreakdownProps> = ({
                     <Badge
                       variant='outline'
                       className={`text-xs font-medium self-start sm:self-auto ${getPaymentTypeBadgeColor(
-                        payment.payment_type
+                        payment.payment_type,
                       )} flex-shrink-0`}
                     >
                       {getPaymentTypeLabel(payment.payment_type)}
