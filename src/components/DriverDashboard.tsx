@@ -1,11 +1,12 @@
-
-import React, { useEffect, useState } from "react";
+import React, { useMemo } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ChartContainer } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useDrivers } from "@/hooks/useDrivers";
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "@/lib/api/client";
 import { Car } from "lucide-react";
 
 // Util: Get month short string
@@ -18,72 +19,56 @@ const getMonthLabel = (dateStr: string) => {
 
 export const DriverDashboard: React.FC = () => {
   const { user } = useAuth();
-  const [monthlyData, setMonthlyData] = useState<{ month: string; rides: number }[]>([]);
-  const [totalRides, setTotalRides] = useState<number>(0);
-  const [loading, setLoading] = useState(true);
+  const { drivers, loading: driversLoading } = useDrivers();
 
-  // Fetch rides for the logged-in driver
-  useEffect(() => {
-    const fetchStats = async () => {
-      setLoading(true);
-      if (!user || !user.id) {
-        setTotalRides(0);
-        setMonthlyData([]);
-        setLoading(false);
-        return;
-      }
+  // Match logged-in user to driver in shared drivers cache
+  const matchingDriver = useMemo(() => {
+    if (!user?.username) return undefined;
+    return drivers.find((d) => d.username === user.username);
+  }, [user, drivers]);
 
-      // Find driver record
-      const driverRes = await supabase
-        .from("drivers" as any)
-        .select("id, name")
-        .eq("username", user.username)
-        .maybeSingle();
-      const driverId = (driverRes.data as any)?.id;
+  const driverId = matchingDriver?.id;
 
-      if (!driverId) {
-        setTotalRides(0);
-        setMonthlyData([]);
-        setLoading(false);
-        return;
-      }
+  // Fetch driver-scoped rides using React Query
+  const { data: rides = [], isLoading: ridesLoading } = useQuery({
+    queryKey: ["rides", { driver_id: driverId }],
+    queryFn: () => apiClient.getRides({ driver_id: driverId! }),
+    enabled: !!driverId,
+  });
 
-      // Fetch rides for this driver
-      const { data: rides } = await supabase
-        .from("rides" as any)
-        .select("date")
-        .eq("driver_id", driverId);
+  // Derive totalRides from rides array
+  const totalRides = rides.length;
 
-      // Total rides
-      setTotalRides(rides?.length || 0);
+  // Derive monthlyData from rides using useMemo
+  const monthlyData = useMemo(() => {
+    if (!rides.length) return [];
 
-      // Build monthly stats
-      const monthlyMap: { [k: string]: number } = {};
-      (rides || []).forEach((ride: any) => {
-        if (!ride.date) return;
-        const label = getMonthLabel(ride.date);
-        monthlyMap[label] = (monthlyMap[label] || 0) + 1;
+    const monthlyMap: { [k: string]: number } = {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    rides.forEach((ride: any) => {
+      if (!ride.date) return;
+      const label = getMonthLabel(ride.date);
+      monthlyMap[label] = (monthlyMap[label] || 0) + 1;
+    });
+
+    // Sort by date ascending
+    const sorted = Object.entries(monthlyMap)
+      .map(([month, rides]) => ({ month, rides }))
+      .sort((a, b) => {
+        const [aMonth, aYear] = a.month.split(" ");
+        const [bMonth, bYear] = b.month.split(" ");
+        const aIdx = monthNames.indexOf(aMonth);
+        const bIdx = monthNames.indexOf(bMonth);
+        const aYearNum = parseInt(aYear.replace("'", ""));
+        const bYearNum = parseInt(bYear.replace("'", ""));
+        return aYear === bYear
+          ? aIdx - bIdx
+          : aYearNum - bYearNum;
       });
+    return sorted;
+  }, [rides]);
 
-      // Sort by date ascending
-      const sorted = Object.entries(monthlyMap)
-        .map(([month, rides]) => ({ month, rides }))
-        .sort((a, b) => {
-          // Parse year/month for proper sorting
-          const [aMonth, aYear] = a.month.split(" ");
-          const [bMonth, bYear] = b.month.split(" ");
-          const aIdx = monthNames.indexOf(aMonth);
-          const bIdx = monthNames.indexOf(bMonth);
-          return aYear === bYear
-            ? aIdx - bIdx
-            : parseInt(aYear.replace("'", "")) - parseInt(bYear.replace("'", ""));
-        });
-      setMonthlyData(sorted);
-      setLoading(false);
-    };
-    fetchStats();
-    // eslint-disable-next-line
-  }, [user]);
+  const loading = driversLoading || (driverId && ridesLoading);
 
   return (
     <div className="space-y-8">

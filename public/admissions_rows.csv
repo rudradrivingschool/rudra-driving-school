@@ -1,0 +1,159 @@
+id,student_name,admission_date,status,created_at,contact,email,sex,license_type,license_number,fees,advance_amount,duration,learning_license,driving_license,start_date,additional_notes,rides_completed,total_rides
+024886e4-9127-4110-a391-78dfcaabc03a,Pandurang tanaji Takmoge,2026-03-03,Active,2026-03-03 04:47:22.559008+00,9922511535,,Male,LMV,,6500,2500,30 rides/month,Not Applied,Pending,2026-03-03,,2,30
+04a208c9-afd5-4b9c-9204-c051d826285a,Santosh apparao Patil,2025-09-05,Active,2025-09-05 06:34:42.404154+00,9552231512,@gmail.com,Male,LMV,,7000,3000,30 rides/month,Not Applied,Pending,2025-09-05,,19,30
+05600b46-c7f2-4028-b082-e19f3c150ca0,Geetakrishna R Mylavarapu,2025-09-10,Completed,2025-09-10 04:46:36.297533+00,7028925880,,Male,LMV,mh13 20180010389,7500,7500,30 rides/month,Not Applied,Pending,2025-09-10,,30,30
+0719830f-d2cf-4efc-85ec-0dce0d1dc1ab,Onkar Ashok Doke,2025-11-18,Completed,2025-11-18 12:41:38.57981+00,9423069201,,Male,,,4500,4500,30 rides/month,Not Applied,Pending,2025-11-18,,30,30
+095af861-3ba5-4e4c-95fe-56c69951e023,Mukhtar Allahbaksh Kankal,2025-12-16,Completed,2025-12-16 04:55:12.602711+00,9028564746,,Male,LMV,,7000,2500,30 rides/month,Not Applied,Pending,2025-12-16,,30,30
+0bc9cfdf-9336-40db-b812-0e0430880873,Ujval Prakash Kulkarni,2025-11-22,Active,2025-11-22 11:55:50.7351+00,9921499699,,Male,NA,,4500,1,30 rides/month,,,2025-11-22,,22,30
+0f08e244-1a71-4771-9eeb-3ea5741a1804,Pallavi dynoba mane,2025-08-18,Active,2025-08-18 03:20:32.094036+00,9822684670,,Female,NA,,5000,2000,30 rides/month,,,2025-08-18,,3,30
+11d8f54a-f123-4ba5-b635-c2814ec1496b,Atul Nagesh Javale,2026-02-14,Active,2026-02-14 05:02:34.909824+00,8329999022,,Male,NA,,5000,3000,30 rides/month,,,2026-02-14,,8,30
+1298ab27-b4ba-4bde-b241-02d4f088be8b,"Atharva Arjun Tambat ",2025-12-08,Completed,2025-12-08 05:14:40.51161+00,8788673710,,Male,NA,,5000,1000,30 rides/month,,,2025-12-08,,30,30
+1319fbcf-68b4-486c-a757-89d797e72c6d,Anil Appasaheb Prachande,2025-10-06,Active,2025-10-06 12:20:57.826662+00,7821999505,@gmail.com,Male,MCWG. LMV,,8500,2000,30 rides/month,Not Applied,Pending,2025-10-06,,28,30
+139716da-ab48-43fd-8fe9-91269a8258d8,Umesh Nigappa Khed,2025-12-11,Completed,2025-12-11 11:44:44.551409+00,8421917652,,Male,LMV,,7000,4000,30 rides/month,Not Applied,Pending,2025-12-11,,30,30
+146fa223-2965-48fd-8026-a5b290c7e2a8,"Tanishraj Dhrinivas Salunkhe ",2025-12-13,Completed,2025-12-13 06:31:06.028205+00,9699392678,,Male,LMV,,8000,5000,30 rides/month,Not Applied,Pending,2025-12-13,,30,30
+172fa8ff-37be-480b-8615-4895fed9f3b5,Renuka Devidas tandelkar,2025-10-06,Completed,2025-10-06 06:03:26.030869+00,9422461190,@gmail.con,Female,NA,,5000,5000,30 rides/month,,,2025-10-06,,30,30
+18624efd-2e4b-4197-9892-e7e9162dc8d3,Gayatri Pravin Potdar,2025-12-18,Active,2025-12-18 05:48:43.493733+00,8010578502,,Female,NA,,4500,0,30 rides/month,,,2025-12-18,,0,30
+1aab1f20-1dc1-4f85-8abe-09c37d839a14,Yasmeen Mazhar Pathan,2026-01-20,Active,2026-01-20 12:02:09.873309+00,9112323774,,Female,NA,,5500,5500,30 rides/month,,,2026-01-20,,23,30
+1bad3f28-3af6-4e84-a924-30e029af49f5,Abhilash Katteppa Koli,2026-02-13,Active,2026-02-13 13:08:04.631197+00,9356378200,,Male,LMV,,7500,3000,30 rides/month,Not Applied,Pending,2026-02-13,,2,30
+1d5cd5fa-30c3-453e-9b9d-f9e86028130e,Rijvan Junnusab sayyad,2025-08-12,Active,2025-08-12 13:11:54.567522+00,9975127086,@gmail.com,Male,LMV-TR,,8000,5000,30 rides/month,Not Applied,Pending,2025-08-12,,28,30
+1e2cbc86-dde5-4ca3-ad73-9e0931ac9d50,Rohit Shivaji Shitole,2025-09-18,Completed,2025-09-18 11:36:43.365016+00,9960635176,@gmail.com,Male,NA,,5500,3000,30 rides/month,,,2025-09-18,,30,30
+1fd73b6a-ede2-4c7e-8abe-1527499397cc,Navnath hanmanthrao landge,2025-11-04,Completed,2025-11-04 03:01:18.74967+00,7709706580,,Male,,,5000,5000,30 rides/month,Not Applied,Pending,2025-11-04,,30,30
+2136049c-d410-4df5-966c-1fd8df4f6d17,Atharv Ramesh Kedar,2025-11-17,Active,2025-11-17 04:17:37.555894+00,7709471143,,Male,NA,,5000,5000,30 rides/month,,,2025-11-17,,26,30
+21fd6bc9-c30a-41f9-9cc5-a73a65396296,Vishal manjunath Umbarje,2025-11-22,Completed,2025-11-22 06:01:15.910836+00,7822909913,,Male,MCWG + LMV,,8000,4000,30 rides/month,Not Applied,Pending,2025-11-22,cash,30,30
+277444c9-b50a-4240-98fa-2c02ba4fe6e7,SANKET PRAKASH UDANSHIV,2025-09-18,Active,2025-09-18 05:07:10.049711+00,9307142350,@GMAIL.COM,Male,NA,,5000,5000,30 rides/month,,,2025-09-18,15 DAYS,23,30
+281cf66f-151a-4612-ae2c-eaaa44cacecf,Piyusha Shubham Shaha,2025-12-12,Completed,2025-12-12 11:54:02.123784+00,9011493637,,Female,NA,,5500,3000,30 rides/month,,,2025-12-12,,30,30
+2ba74be1-1851-4a7a-acbb-0492d3167df8,Yogesh Chandrakant Dudhnikar,2025-12-30,Completed,2025-12-30 12:05:02.74896+00,9156816109,,Male,LMV,,7000,2500,30 rides/month,Not Applied,Pending,2025-12-30,,30,30
+2bcf92bc-2628-4028-8382-39962bc26d06,Jaydev madhukar Patil,2025-10-04,Completed,2025-10-04 03:10:02.377783+00,9049187729,,Male,,,5500,3500,30 rides/month,Not Applied,Pending,2025-10-04,,30,30
+2bd15312-ed3e-43fc-bd85-824d2be7caca,Sainath Dinesh Medpalli,2026-02-19,Active,2026-02-19 03:25:44.39642+00,8799948873,,Male,LMV,,7000,2000,30 rides/month,Not Applied,Pending,2026-02-19,,8,30
+2e06f503-74f6-4953-9c2a-8935d0bc13ae,Amol Vilas Thonge,2025-09-23,Active,2025-09-23 12:02:15.764082+00,9823408660,@gmail.com,Male,LMV,,7000,6500,30 rides/month,Not Applied,Pending,2025-09-23,,17,30
+2e38b6b1-1541-4d56-a3f6-59117a918677,"pritam thavru rathod ",2025-08-16,Completed,2025-08-16 04:05:37.460393+00,9921999139,,Male,MCWG LMV NT,,8500,4000,30 rides/month,Not Applied,Pending,2025-08-16,,30,30
+2f6348ff-8404-4a53-994f-420e632a1da1,Dadasaheb kashinath Gaikwad,2026-01-24,Active,2026-01-24 11:14:21.59496+00,9421071469,,Male,LMV,,7000,3000,30 rides/month,Not Applied,Pending,2026-01-24,,22,30
+3166dd93-463e-420e-97ab-1c4ea02a23c1,Rameshwar Dnyaneshwar Chobe,2025-12-15,Completed,2025-12-15 05:33:21.311565+00,9096858267,,Male,NA,,5500,3000,30 rides/month,,,2025-12-15,,30,30
+33e66756-c489-42ff-8977-52d852091510,Meera Devidas Shinde,2025-12-16,Active,2025-12-16 03:05:03.809368+00,9881026055,,Female,NA,,5000,5000,30 rides/month,,,2025-12-16,Cash,23,30
+347da99c-66c6-43a0-90ac-7c93b249e430,Neha prafulla gosavi,2025-08-04,Completed,2025-08-04 12:10:27.162313+00,8793404547,@gmail.com,Female,LMV,,6000,5000,30 rides/month,Not Applied,Pending,2025-08-04,LL have already  QR,30,30
+3624b69d-33e6-44dd-9be5-b8044da30ce2,Nagesh Bassanna Chadchankar,2025-12-27,Active,2025-12-27 05:22:08.312746+00,8668270212,,Male,NA,,5000,3000,30 rides/month,,,2025-12-27,,10,30
+36df6bc3-1c79-4941-9d6b-28e224ee93ae,Swati Rameshwar Chobe,2025-12-15,Completed,2025-12-15 05:34:14.998736+00,9834346209,,Female,LMV,,7500,3000,30 rides/month,Not Applied,Pending,2025-12-15,,30,30
+381ebd9f-caca-4821-9209-b605ed65aeea,Vijay Deepak Waghmare,2025-12-11,Completed,2025-12-11 07:30:49.273626+00,8767880854,,Male,MCWG + LMV,,8500,3500,30 rides/month,Not Applied,Pending,2025-12-11,,30,30
+3c13773c-8420-4fa3-a81e-ad34157a36a9,Swati Sachin Savale,2026-02-09,Active,2026-02-09 04:48:40.10934+00,7666209703,,Female,MCWOG + LMV,,5500,4000,30 rides/month,Not Applied,Pending,2026-02-09,,14,30
+3c814926-8be8-4909-bb1b-9adfc539cc14,laxuman aamoghsiddh waghmode,2025-08-05,Completed,2025-08-05 05:08:41.228921+00,7550465050,gmail.com,Male,LMV + apply for duplicate,MH13 20090035517,8000,5000,30 rides/month,Not Applied,Pending,2025-08-05,Apply for dublicate   QR,30,30
+3e2d8e40-1638-4ab0-a453-dbad6fd16019,Audhumbar Vishnu Bandgar,2026-01-07,Active,2026-01-07 08:00:05.860208+00,8999410042,,Male,LMV,,7000,3000,30 rides/month,Not Applied,Pending,2026-01-07,,13,30
+3e3c5b76-676c-43b5-81dc-ee82961b77e7,Manohar Malkappa Sutar,2026-01-08,Active,2026-01-08 12:21:28.488796+00,8888873305,,Male,,,5000,5000,30 rides/month,Not Applied,Pending,2026-01-08,,28,30
+47b34cb7-861a-4ee1-8297-1ac071326165,Asif Sahebali Kankal,2025-12-16,Completed,2025-12-16 04:54:15.664815+00,8805913991,,Male,LMV,,7000,2500,30 rides/month,Not Applied,Pending,2025-12-16,,30,30
+496d7baf-e02f-4c3c-a770-bc689892d701,Amardeep Mohan Shinde,2025-12-03,Active,2025-12-03 05:17:27.763626+00,8975760131,,Male,NA,,5500,5500,30 rides/month,,,2025-12-03,,27,30
+4b016f7e-2161-4a0a-a8a9-5cab37aff87c,Vijaylakshmi Ravikumar Kumbhar,2025-11-17,Completed,2025-11-17 11:59:27.656118+00,8208990650,,Female,NA,,5500,4500,30 rides/month,,,2025-11-17,,30,30
+4c06a455-24ab-4e1c-af33-4c7dc157b63e,"Rupesh Javharlal Chavan ",2026-02-05,Active,2026-02-05 11:08:53.846714+00,7020419641,,Male,MCWG + LMV,,8000,5000,30 rides/month,Not Applied,Pending,2026-02-05,,2,30
+4e5de3e6-0256-4be0-8fb1-96cb1aaf7dde,chetan sadashiv mavinmar,2025-09-02,Completed,2025-09-02 12:25:03.13524+00,8830386276,@gmail.com,Male,MCWG LMV NT,,8500,5000,30 rides/month,Not Applied,Pending,2025-09-02,,30,30
+4ec7469f-f2df-4687-87bd-551fc759b78d,Akash babu Naik,2026-02-02,Active,2026-02-02 13:02:20.92962+00,9623373376,,Male,LMV-TR,,8000,5000,30 rides/month,Not Applied,Pending,2026-02-02,,19,30
+4f37100a-24f8-4eeb-a5bd-4825cc5a9f8b,Nilesh Santosh Gaudnavru,2025-11-29,Completed,2025-11-29 03:04:24.286489+00,9028467977,,Male,NA,,5500,5500,30 rides/month,,,2025-11-29,,30,30
+4ff4aa7d-09e2-4e6d-bf6c-21628776b229,Rajeshwari Pankaj upadhye,2025-11-17,Completed,2025-11-17 12:53:10.165441+00,9657779189,@gmail.com,Female,NA,,4500,1,30 rides/month,,,2025-11-17,,30,30
+53fd193e-a6d3-4701-943e-b242a25d665b,Shubham vishnu Jadhav,2025-11-07,Completed,2025-11-07 12:01:55.013559+00,9772819890,@gmail.com,Male,LMV-TR,,8500,8500,30 rides/month,Not Applied,Pending,2025-11-07,,30,30
+55e27ed7-e3e4-4d82-91f3-f6522da61fc1,Nakul nandkishor Aigole,2025-10-27,Completed,2025-10-27 05:25:32.061025+00,9860115350,,Male,LMV,,7000,5500,30 rides/month,Not Applied,Pending,2025-10-27,,31,30
+56e15c41-bfdb-4e0e-89e5-c7603a1b3439,Mahantesh Hanmant Bagle,2026-02-11,Active,2026-02-11 02:59:22.243829+00,9923066282,,Male,LMV,,5500,3000,30 rides/month,Not Applied,Pending,2026-02-11,,9,30
+56e2e600-e0f3-4c0a-b14d-0e523e9ae7c8,Kiran Nagesh Akkalwade,2025-10-06,Active,2025-10-06 03:29:05.75414+00,9970909208,@gmail.com,Male,LMV,,7000,1,30 rides/month,Not Applied,Pending,2025-10-06,,6,30
+56fe1e08-0031-432e-8523-025c1784608a,Neelima digarse,2025-11-10,Completed,2025-11-10 12:13:56.271166+00,8809790282,@gmail.com,Female,MCWOG + LMV,,5000,5000,30 rides/month,Not Applied,Pending,2025-11-10,,30,30
+579f22ee-5e5c-4edc-9dfc-ce51faba4873,Sanjay Annappa Issure,2026-01-24,Completed,2026-01-24 06:17:44.085748+00,9146142509,,Male,NA,,4500,2000,30 rides/month,,,2026-01-24,,30,30
+5886c63c-5e5c-4773-adf0-b961c2f1a88f,Dhondappa Shivappa Patil,2025-11-17,Active,2025-11-17 04:18:31.316494+00,8788631972,,Male,NA,,5000,5000,30 rides/month,,,2025-11-17,,27,30
+59364a17-d050-4cb0-98f3-139ee2cc4e87,Sanket Sanjay Kalasgonda,2025-09-15,Active,2025-09-15 06:26:36.947308+00,9420747455,@gmail.com,Male,LMV,,7500,3000,30 rides/month,Not Applied,Pending,2025-09-15,,24,30
+5962098e-8d13-429f-b70c-e615093f7a51,Vaishnav Baburao Sanap,2026-02-13,Active,2026-02-13 04:50:40.595819+00,9890171548,,Male,NA,,5500,3000,30 rides/month,,,2026-02-13,,7,30
+5a614cff-722e-475b-81eb-b59bb0c893bd,Manisha Suresh Kharsade,2025-11-04,Completed,2025-11-04 06:01:33.608762+00,9325120433,,Female,MCWG LMV NT,,5000,0,30 rides/month,Not Applied,Pending,2025-11-04,,30,30
+5be8b633-380c-47d9-a66f-ce8064f8a012,Parmeshwar Shankar Patil,2025-09-30,Completed,2025-09-30 04:23:39.013126+00,9766924769,,Male,,,5500,5500,30 rides/month,Not Applied,Pending,2025-09-30,,30,30
+5c395ac8-a5ef-4086-96ac-f02983b19758,Nakul Nandkishor Aigole,2025-12-22,Completed,2025-12-22 05:11:20.571908+00,9860115350,,Male,NA,,4000,4000,30 rides/month,,,2025-12-22,,30,30
+5d62de90-255e-47f8-8eda-7f043aa9bd10,Sangappa Siddharam Fulari,2025-11-22,Completed,2025-11-22 12:33:07.418223+00,9420263796,,Male,MCWG + LMV,,7800,4800,30 rides/month,Not Applied,Pending,2025-11-22,,30,30
+5d9ad86c-0e1d-4b32-ab66-7c466b1bbc8b,Onkar Ravindra Pula,2026-02-02,Active,2026-02-02 13:03:42.051207+00,7972650688,,Male,LMV-TR,,7000,5000,30 rides/month,Not Applied,Pending,2026-02-02,,19,30
+61b58831-5334-4da0-8090-91339e59cf68,Aasha Vasudev Shirnale,2025-11-29,Active,2025-11-29 11:42:09.292241+00,9420770896,,Male,LMV,,7000,3000,30 rides/month,Not Applied,Pending,2025-11-29,,26,30
+62153e6a-84c2-40bd-b6a8-2db9319db58c,Sanket Bhanudas Vyavhare,2025-11-22,Completed,2025-11-22 12:41:03.127943+00,9359012607,,Male,NA,,5500,3000,30 rides/month,,,2025-11-22,,30,30
+62743124-fd10-47be-a6ea-97e67fd6dd20,Satish Namdev Bharate,2026-01-08,Active,2026-01-08 13:10:33.021418+00,9623919640,,Male,MCWG + LMV,,8000,5000,30 rides/month,Not Applied,Pending,2026-01-08,,22,30
+629a91cc-1932-41ee-bdf8-06ed586c6bc0,Deepak Govind Digarse,2025-11-10,Active,2025-11-10 12:11:59.198853+00,8092876077,@gmail.com,Male,NA,,5000,5000,30 rides/month,,,2025-11-10,,29,30
+649efe37-edcc-4946-bfdb-7c91d72a1019,Balkrushna Pandurang Sadafule,2025-12-22,Completed,2025-12-22 11:58:09.064808+00,9422649967,,Male,LMV,,7000,4500,30 rides/month,Not Applied,Pending,2025-12-22,,30,30
+65ae63b6-fff4-4b1e-b493-c79bca00aa1e,Anil Ashok Prachande,2025-09-19,Completed,2025-09-19 12:47:52.420555+00,8805050274,@gmail.com,Male,LMV,,4500,3000,30 rides/month,Not Applied,Pending,2025-09-19,,30,30
+661ca6f0-5f6f-43de-9ab8-2bd4fe42f4c8,"Sheetal Bhimashankar Patil ",2025-11-25,Completed,2025-11-25 02:51:49.906968+00,8669094448,,Female,LMV,,7500,3500,30 rides/month,Not Applied,Pending,2025-11-25,,30,30
+68474caa-c75e-4ef6-9354-c1939808a269,Snehal Ravidra Birajdar,2026-02-23,Active,2026-02-23 03:34:14.163621+00,8080791015,,Female,NA,,5500,3000,30 rides/month,,,2026-02-23,,5,30
+715c36a5-e10f-4de0-906e-a850cd5b827d,Aasha Negi,2026-01-26,Active,2026-01-26 06:10:56.241969+00,9634952042,,Female,NA,,5500,5500,30 rides/month,,,2026-01-26,,19,30
+71772fb2-4ede-4f7c-98f9-6ebd10e552fa,Vilas namdev Pawar,2025-11-22,Active,2025-11-22 06:16:54.839398+00,9730442523,,Male,NA,,5000,1,30 rides/month,,,2025-11-22,,27,30
+71f0c9b7-3fc9-4cf6-ae27-ab15e25e99c9,Sujata Nandkumar Desai,2025-12-08,Active,2025-12-08 04:51:28.961289+00,9665267883,,Female,NA,,5000,1,30 rides/month,,,2025-12-08,,2,30
+72cd2186-829a-4fbe-a00d-6db8094fef9b,Haribhau Santaram Popalbhatt,2025-12-08,Completed,2025-12-08 12:49:13.802681+00,9763857285,,Male,NA,,5000,5000,30 rides/month,,,2025-12-08,,30,30
+77af80c1-adeb-4919-b54f-703b36fa67c9,Pratik Basavraj Yernale,2025-12-10,Completed,2025-12-10 03:59:49.053012+00,9527916389,,Male,NA,,7500,2500,30 rides/month,,,2025-12-10,,30,30
+780b63e9-25d6-41ea-bb8e-8a3a90b89f4c,Rohit shrirang Mane,2025-09-23,Active,2025-09-23 05:42:19.140378+00,9766121327,@gmail.com,Male,LMV,,7000,3000,30 rides/month,Not Applied,Pending,2025-09-23,,19,30
+793c4f0c-f615-4289-a163-6e8c2e4216c2,Sanket ashok nimbargi,2025-08-29,Completed,2025-08-29 12:21:17.450994+00,9730564550,,Male,LMV,,7500,5000,30 rides/month,Not Applied,Pending,2025-08-29,,30,30
+7b8190b4-9d9d-4cfb-8a8d-4d17b6e0057b,Rushikesh Narsappa Rathod,2025-12-06,Active,2025-12-06 06:13:39.441339+00,8600980959,,Male,MCWG + LMV,,8000,3000,30 rides/month,Not Applied,Pending,2025-12-06,,14,30
+7c292e3e-8e27-4284-94cd-f768f82e2144,Pranali narsingh gaikwad,2025-08-05,Active,2025-08-05 06:43:56.481647+00,8668711498,gmail.com,Female,mcowg lmv,,7000,4000,30 rides/month,Not Applied,Pending,2025-08-05,QR,22,30
+7fed01dd-bbda-4bc7-b3ab-09cf1972898b,Santosh Shrimant Pathakar,2026-03-03,Active,2026-03-03 04:44:58.629795+00,7972659438,,Male,LMV-TR,,7500,3000,30 rides/month,Not Applied,Pending,2026-03-03,,0,30
+800beba5-ff0e-4ced-bc59-51a62302dc10,"Varsharani Aanarao Patil ",2025-11-25,Completed,2025-11-25 02:53:15.287564+00,9307690336,,Female,MCWOG + LMV,,8500,3500,30 rides/month,Not Applied,Pending,2025-11-25,,30,30
+80e3da95-0183-455b-bdc6-f482fede0e25,Yash baburao Dhakane,2025-08-25,Completed,2025-08-25 06:21:15.853457+00,9545027107,@gmail.com,Male,LMV,,7000,3500,15 rides/month,Not Applied,Pending,2025-08-25,,15,15
+81bf7940-38c1-4ec3-afc6-a9efc7ca0bd8,Revansiddh Basavraj Hiremath,2025-12-26,Active,2025-12-26 11:30:14.541834+00,8626083212,,Male,NA,,5000,2500,30 rides/month,,,2025-12-26,,5,30
+81c9c43f-ba2b-420c-9942-57ef4ad9e5aa,Reva Upendra deo,2026-01-02,Completed,2026-01-02 11:41:05.506469+00,7745077675,,Female,LMV,,7000,0,30 rides/month,Not Applied,Pending,2026-01-02,,30,30
+842d2a71-fc37-48a7-99b5-0db25e8d99fe,Satish Anil Naiknavare,2025-09-02,Active,2025-09-02 11:37:19.083531+00,9284227709,@gmail.com,Male,LMV,,7000,5000,30 rides/month,Not Applied,Pending,2025-09-02,,26,30
+85755bb5-ccc3-4bf4-9bca-bb3f6b07eff9,Gopal Appasha Bhale,2025-10-08,Active,2025-10-08 03:59:17.036188+00,9011670041,@gmail.com,Male,NA,,4500,1,30 rides/month,,,2025-10-08,,4,30
+86e0f071-14fc-423f-a4e5-5474d1c51782,Raziya Sahebjan shetsanadi,2025-12-10,Completed,2025-12-10 11:38:19.124076+00,9860125218,,Female,LMV,,7500,4000,30 rides/month,Not Applied,Pending,2025-12-10,,31,30
+8a740759-a5b2-4bfe-bb35-9b7896e39800,Aditya Virendra Biljagermath,2025-08-25,Active,2025-08-25 06:22:25.910561+00,8767598748,@gmail.com,Male,LMV,,7000,3500,30 rides/month,Not Applied,Pending,2025-08-25,,21,30
+8ab838dd-44f1-4b19-a4e0-21f99c300b32,Mayur Uttam Sutar,2026-02-19,Active,2026-02-19 03:24:57.001725+00,9021196194,,Male,LMV,,7000,3500,30 rides/month,Not Applied,Pending,2026-02-19,,7,30
+8b9ceb2b-4f30-4e34-98e2-bcbc81ed8372,susmit vikas kshirsagar,2025-12-06,Active,2025-12-06 06:14:44.404839+00,7057656085,,Male,LMV,,7000,3000,30 rides/month,Not Applied,Pending,2025-12-06,,19,30
+8c4b4c95-bc5d-4b72-8db8-b766b1d5cb0e,jayshree siddaram gavali,2025-08-28,Active,2025-08-28 12:50:50.131815+00,9226453150,,Female,,,8500,5500,30 rides/month,Not Applied,Pending,2025-08-28,MCWOG+LMV NT driving liceance,27,30
+8e89d55d-6da0-407d-8672-caf5b40fa625,Smita Mahaveer Bubane,2026-02-21,Active,2026-02-21 02:38:00.874623+00,9975309921,,Female,LMV,,7000,3000,30 rides/month,Not Applied,Pending,2026-02-21,,5,30
+996d40c0-3ea3-4f4b-ba7d-c559870c979b,Ragini Malinath Halli,2026-01-01,Active,2026-01-01 06:47:50.867128+00,9284801202,,Female,MCWOG + LMV,,8500,5500,30 rides/month,Not Applied,Pending,2026-01-01,,7,30
+9a8dff0f-bf25-460d-bbbf-4cae1afbfdad,Anannya Yashwant Mane,2025-12-09,Active,2025-12-09 05:39:28.115062+00,7620164597,,Female,NA,,5000,5000,30 rides/month,,,2025-12-09,cash,16,30
+9ad85fc1-e41d-403b-9fc8-5181104587c1,"Bhimavarapu Kasibabu ",2025-12-01,Active,2025-12-01 02:42:48.415871+00,‪+91 99514 59798‬,,Male,NA,,5000,3000,30 rides/month,,,2025-12-01,,29,30
+9b38075b-1ff6-4fd0-8e2d-0925e61619a7,Mallikarjun bargalsiddh Pujari,2025-11-19,Completed,2025-11-19 12:00:49.015442+00,9834555652,@gmail.com,Male,LMV,,7500,3500,30 rides/month,Not Applied,Pending,2025-11-19,,30,30
+9bccefee-2f7a-4711-9810-afcaecd86e17,Omkar shashikant munde,2025-08-02,Completed,2025-08-02 11:45:06.613609+00,7666335175,tohanshashikantmunde2310@gmail.com,Male,MCWG+LMV,,8000,5000,30 rides/month,Not Applied,Pending,2025-08-02,QR,30,30
+9dcaadcc-db03-475e-acc5-d82ea7acae18,Santosh Shrimanth Savle,2025-11-17,Active,2025-11-17 04:58:22.006118+00,9022875955,,Male,NA,,5500,2000,30 rides/month,,,2025-11-17,Cash,28,30
+9dfa0aaa-a99f-4368-95f4-6083c6b51fc0,Ganesh Ramesh Bargodiya,2026-02-16,Active,2026-02-16 04:57:48.926034+00,9511866407,,Male,LMV,,7500,3000,30 rides/month,Not Applied,Pending,2026-02-16,,11,30
+9e5483ca-4cca-43a8-9c9e-d2c8a4bde8ef,Mahadev Shrimant Tadkale,2025-10-04,Completed,2025-10-04 06:15:54.317047+00,9766977767,,Male,LMV,,7500,5500,30 rides/month,Not Applied,Pending,2025-10-04,,30,30
+a0294d11-5d2b-4c0f-988a-0733122be71d,Vinod Vinayak Nanavare,2025-09-02,Active,2025-09-02 11:38:29.792895+00,8793415520,@gmail.com,Male,LMV,,7000,5000,30 rides/month,Not Applied,Pending,2025-09-02,,26,30
+a0b49496-1317-4224-8e2c-9fac0f0e8544,Dineshkumar Raosaheb Gidgonde,2025-10-10,Completed,2025-10-10 11:12:07.837595+00,8766656988,@gmail.com,Male,MCWG. LMV,,8500,3000,30 rides/month,Not Applied,Pending,2025-10-10,,30,30
+a1719334-0661-4292-a031-6960276d5a88,Sandeep Kakasaheb Gore,2026-02-05,Active,2026-02-05 03:52:06.651834+00,9011824893,,Male,MCWG + LMV,,8000,5000,30 rides/month,Not Applied,Pending,2026-02-05,,8,30
+a175284b-ba9c-4f73-a0d8-509838c7d3a3,Vaibhav Pitamber Lendave,2025-11-27,Completed,2025-11-27 05:54:05.724024+00,9834051263,,Male,NA,,5500,300,30 rides/month,,,2025-11-27,,30,30
+a304f84b-9bff-4d3b-9abc-118037360a7a,Samarth Shreekant Shinde,2025-12-22,Active,2025-12-22 12:06:56.185842+00,9623910108,,Male,,,5000,5000,30 rides/month,Not Applied,Pending,2025-12-22,,29,30
+a33b1e64-ef40-4c72-8512-500ad70101ba,Harshvardhan Rajkumar Jadhav,2025-10-31,Active,2025-10-31 02:14:56.491198+00,9511732608,,Male,LMV,,7500,4000,30 rides/month,Not Applied,Pending,2025-10-31,,26,30
+a4f02947-726e-47ac-9452-e314089a531f,Neha Ashok Kallawale,2025-09-04,Active,2025-09-04 12:05:40.748789+00,9309020342,@gmail.com,Female,MCWOG. LMV-TR,,7500,3000,30 rides/month,Not Applied,Pending,2025-09-04,police bharti,20,30
+a6ab06d1-27c8-4b28-b435-74c409a4b102,Aman Rashid Banewale,2025-08-26,Completed,2025-08-26 03:49:57.852852+00,9923409848,,Male,MCWG LMV NT,,8000,5000,30 rides/month,Not Applied,Pending,2025-08-26,,30,30
+a6bf347d-cd59-4465-bbc2-54f32edee139,Ketki Shashikant Balwadkar,2026-01-05,Active,2026-01-05 11:48:48.90826+00,9834435528,,Female,LMV,,4000,1,30 rides/month,Not Applied,Pending,2026-01-05,,13,30
+a70a37ef-6e35-4dd9-ad34-4f119cc5774e,Sarita Ashok Chougule,2026-02-02,Active,2026-02-02 13:08:43.364824+00,9890069923,,Female,LMV,,7500,3000,30 rides/month,Not Applied,Pending,2026-02-02,,13,30
+ac3c8bbd-8aa9-4e94-a856-070f9510215b,Vardhan Gangadhar Karankot,2025-12-29,Completed,2025-12-29 03:20:38.193624+00,9730727788,,Male,NA,,5000,2000,30 rides/month,,,2025-12-29,,30,30
+b6167751-d91d-4249-b171-484b500e4ef2,Prakash Sunil Javanjal,2025-09-27,Completed,2025-09-27 05:58:46.140916+00,7507142793,@gmail.com,Male,LMV,,7500,3000,30 rides/month,Not Applied,Pending,2025-09-27,,30,30
+b65c9790-6b0c-4094-bc67-c1fd3ce39b0e,"Sumeet Babu Aasangi ",2026-02-09,Active,2026-02-09 04:45:58.618845+00,8767628080,,Male,NA,,5000,5000,30 rides/month,,,2026-02-09,,10,30
+b6eb25d0-893e-4bd5-9a98-a10491ba172c,Gorakhnath Babanrao Mundhe,2026-01-05,Active,2026-01-05 06:07:43.906448+00,7709755898,,Male,NA,,5000,3000,30 rides/month,,,2026-01-05,,27,30
+b70388ef-e3ce-447a-9c38-056a2fed9ba6,Akshay jayprakash rankhamb,2025-10-10,Completed,2025-10-10 11:10:34.228645+00,9657855072,@gmail.com,Male,MCWG. LMV-TR,,8500,3000,30 rides/month,Not Applied,Pending,2025-10-10,,30,30
+b87e8d99-c323-44b7-a733-86eb75ac50df,Aditya Amarr Chappekar,2025-11-10,Completed,2025-11-10 02:46:06.223213+00,7020003153,@gmail.com,Male,MCWG + LMV,,8500,8500,30 rides/month,Not Applied,Pending,2025-11-10,,30,30
+b8865d4e-4c07-4a65-9a10-3aa69d144424,Pravin Mahadev Sarvoday,2025-12-22,Active,2025-12-22 11:35:03.068618+00,8888789248,,Male,LMV,,7000,2500,30 rides/month,Not Applied,Pending,2025-12-22,,16,30
+b8e0499a-68ee-425e-9aa2-bd9735e7bff7,Vinod parmeshwar jadahav,2025-08-25,Completed,2025-08-25 11:29:17.90664+00,7887949699,,Male,LMV,,5500,5500,15 rides/month,Not Applied,Pending,2025-08-25,,15,15
+b8ef6647-f562-4ee4-8fd8-b98661ffd985,Rajan ramchandra Awargand,2025-09-03,Completed,2025-09-03 12:11:04.046909+00,8830655213,@gmail.com,Male,MCWG. LMV,,8500,5000,30 rides/month,Not Applied,Pending,2025-09-03,"Without licence ",30,30
+b919ea4b-5936-4dee-9cb1-9bb3f64a7925,Yash Gangadhar Kamat,2026-01-14,Active,2026-01-14 12:02:14.278407+00,8888847248,,Male,NA,,5500,5500,30 rides/month,,,2026-01-14,,24,30
+bb5bdf0c-e6ec-4d78-b958-b317148ac9c7,Sanal Samson Mathew,2025-11-10,Active,2025-11-10 05:11:23.744999+00,9322556539,@gmail.com,Male,NA,,4500,4500,30 rides/month,,,2025-11-10,cash,29,30
+bc135398-a09d-4fa5-b2b2-736ff91df013,Pratapsigh jaisigh Rathod,2025-09-20,Completed,2025-09-20 12:23:50.178752+00,9764572705,@gmail.com,Male,NA,,5500,5500,30 rides/month,,,2025-09-20,,30,30
+bc306268-9ced-4f66-aff4-1212f40161d3,Sharvari v math,2025-08-02,Active,2025-08-02 12:28:50.155687+00,8010435066,@gmail.com,Female,MCWOG+LMV,,8000,3000,30 rides/month,Not Applied,Pending,2025-08-02,QR,17,30
+bd45214b-d6f6-456d-9fe9-1aa4a8437e88,Onkar charudatta Kakde,2025-10-06,Completed,2025-10-06 12:14:55.509284+00,9373815118,,Male,"Without license ",,5500,3000,30 rides/month,Not Applied,Pending,2025-10-06,"Without license ",30,30
+bf71b36e-5cd3-4f67-b92e-064fe6ec43dc,Nitin Chidanand Purwantswami,2025-12-15,Completed,2025-12-15 05:30:28.624836+00,966531924,,Male,LMV,,7500,3000,30 rides/month,Not Applied,Pending,2025-12-15,,30,30
+c004c93a-6dd5-4457-b754-2350e1c78fe3,Aditya Balkrushna sadafule,2025-12-22,Completed,2025-12-22 11:57:10.924302+00,7499169587,,Male,NA,,4500,4500,30 rides/month,,,2025-12-22,,30,30
+c2a15cc7-16ac-40b1-aa93-8adcb09e7865,Amol Arjun Bandichode,2025-11-19,Active,2025-11-19 06:50:19.008091+00,7972302359,@gmail.com,Male,LMV,,7500,3000,30 rides/month,Not Applied,Pending,2025-11-19,,5,30
+c2a5815c-c8d9-4d64-852a-ad4b4ce0b149,Rashid sayyadbasha shaikh,2025-08-12,Active,2025-08-12 13:14:21.092339+00,8485005968,@gmail.com,Male,MCWG  LMV-TR,,9000,5000,30 rides/month,Not Applied,Pending,2025-08-12,,28,30
+c2d725aa-b39e-40c3-848a-4ac2358e5f62,Divya jitendra Gaikwad,2026-01-05,Active,2026-01-05 12:12:27.592338+00,8605766689,,Female,NA,,5000,3000,30 rides/month,,,2026-01-05,,20,30
+c46c507a-c85d-494c-9771-e7609bbaac55,"Suman Prakash Kamble ",2025-11-07,Active,2025-11-07 11:04:11.974553+00,9356476996,@gmail.com,Female,MCWOG + LMV,,8500,3500,30 rides/month,Not Applied,Pending,2025-11-07,,29,30
+c498fa03-3c6d-42f2-a300-9cb61d17b5b3,Ravindra Babu pawar,2025-08-18,Active,2025-08-18 03:48:30.095538+00,9922360501,@gmail.com,Male,MCWG  LMV,,8000,2500,30 rides/month,Not Applied,Pending,2025-08-18,,6,30
+c5ca7d07-ba88-4156-b66c-26680bb58989,praniti mallikarjun bake,2025-08-07,Active,2025-08-07 02:54:20.835866+00,9359014991,pranitibake17@gmail.com,Female,MCWOG-LMV,,8000,3000,30 rides/month,Not Applied,Pending,2025-08-07,,8,30
+c5ffd878-44b9-416a-adbe-e5e5ee725b98,Manvendra Madhukar Patel,2025-12-29,Active,2025-12-29 02:34:30.443988+00,8860831975,,Male,,,5500,5500,30 rides/month,Not Applied,Pending,2025-12-29,Cash,24,30
+c76d4774-4bd8-45e1-a058-e6473bea16cd,Shankar Nagnath Shivshetti,2026-02-20,Active,2026-02-20 11:29:57.953292+00,9673635151,,Male,LMV,,7000,5000,30 rides/month,Not Applied,Pending,2026-02-20,,2,30
+c95bb8cd-7d93-4748-ba07-d40da52dc1d0,Sarika Sourabh Savale,2026-02-09,Active,2026-02-09 04:47:36.947099+00,7758971425,,Female,MCWOG + LMV,,5500,4000,30 rides/month,Not Applied,Pending,2026-02-09,,14,30
+cb5f8ffa-c4f9-4adf-9dfc-c12f0d702844,Om Laxuman Shinde,2026-01-01,Completed,2026-01-01 11:59:16.973163+00,8625895675,,Male,NA,,5000,3000,30 rides/month,,,2026-01-01,,30,30
+cfb152bd-d92a-4ca1-a8ee-010d63c6b96c,Shivkant Hanmanth Birajdar,2025-09-29,Active,2025-09-29 03:21:52.621286+00,8329686015,,Male,,,5500,5500,30 rides/month,Not Applied,Pending,2025-09-29,,20,30
+d38eb72a-27d2-4669-acdb-dcaba4b03515,Shailendra Arun Ket,2026-02-16,Active,2026-02-16 04:58:37.436068+00,9860600595,,Male,NA,,5500,2500,30 rides/month,,,2026-02-16,,5,30
+d4a74098-c3e0-4d26-8659-a0d7a3650c1e,Rahul Raju Rathod,2026-02-10,Active,2026-02-10 02:52:46.118975+00,9657941375,,Male,NA,,5500,3000,30 rides/month,,,2026-02-10,,12,30
+d9d5b041-aa18-4630-9252-dd2b8e505dd0,Sambhaji haridas ket,2025-09-02,Completed,2025-09-02 11:36:08.711889+00,7499299920,@gmail.com,Male,LMV,,6500,3000,30 rides/month,Not Applied,Pending,2025-09-02,,30,30
+d9df9bcc-86ca-45b1-a324-b248e72ea6ae,Aadinath Raghu Shingare,2025-09-01,Completed,2025-09-01 11:51:50.495599+00,8788359265,@gmail.com,Male,LMV. MCWG,,8500,5500,30 rides/month,Not Applied,Pending,2025-09-01,,31,30
+dc08de84-c605-42c6-9ef5-ce4fe20b06c1,Firoz Abdullrahim Shaikh,2025-08-22,Active,2025-08-22 12:14:21.940632+00,9860735554,@gmail.com,Male,NA,,5500,3000,30 rides/month,,,2025-08-22,,7,30
+de78fecb-5229-47f4-ba88-ce3a22c0aac9,Pradip Mallikarjun Munade,2025-09-23,Active,2025-09-23 12:04:11.679465+00,00000000,@gmail.com,Male,LMV,,7000,4998,30 rides/month,Not Applied,Pending,2025-09-23,,1,30
+def24810-62bf-45f0-a6e8-f37a132ceebe,Kedarnath Shantappa Patil,2026-02-02,Active,2026-02-02 04:51:28.037106+00,9373911217,,Male,MCWG + LMV,,8000,4000,30 rides/month,Not Applied,Pending,2026-02-02,,11,30
+e2d251aa-f73f-44a6-9c9e-02efcb52a759,AAKASH VHANKATTI,2025-08-16,Completed,2025-08-16 03:03:59.308632+00,9665885869,,Male,LMV,,7500,3000,30 rides/month,Not Applied,Pending,2025-08-16,,31,30
+e4b02de7-20cb-4984-8721-e9fa9cd9f928,Prshant Jayprkash sanga,2025-12-26,Completed,2025-12-26 06:49:05.150057+00,9595051516,,Male,,,5500,4500,30 rides/month,Not Applied,Pending,2025-12-26,,30,30
+e589fb54-0c9b-4735-ad90-ad78d110f2ff,Saroja Shrikant Bhoge,2026-02-03,Active,2026-02-03 12:31:50.894111+00,9370603392,,Female,MCWOG + LMV,,8000,2500,30 rides/month,Not Applied,Pending,2026-02-03,,14,30
+e6a746b1-ae12-44ef-b889-4935a557d1e9,Prajwal Suresh Dafale,2026-02-19,Active,2026-02-19 03:26:59.219373+00,7385842713,,Male,LMV,,7500,4000,30 rides/month,Not Applied,Pending,2026-02-19,,2,30
+e784dde1-8af4-4f37-af6a-6f9a9a6636ab,supriya basveshwar yalgare,2025-09-18,Active,2025-09-18 12:21:31.424166+00,8484099730,,Female,MCWG LMV NT,,8000,8000,30 rides/month,Not Applied,Pending,2025-09-18,mcwog +lmv nt,17,30
+e820a8ea-b80b-46b5-925e-0a91df687061,Madhuri Vikas Pawar,2025-11-04,Completed,2025-11-04 05:59:58.19807+00,7709979978,,Female,NA,,5000,3000,30 rides/month,,,2025-11-04,,30,30
+eaba885f-7db1-46cb-9205-78a42bac055b,Jotiba Prakash Ingole,2025-12-01,Completed,2025-12-01 02:30:52.174748+00,9765483036,,Male,LMV,,7000,3000,30 rides/month,Not Applied,Pending,2025-12-01,,30,30
+ed00a137-464d-4039-be6d-30afaa7b48ba,Umakant Subhash Gaikwad,2026-02-17,Active,2026-02-17 04:50:01.198782+00,7796599819,,Male,NA,,5500,3000,30 rides/month,,,2026-02-17,,6,30
+f1a236ef-1f9b-49cf-90b3-aa6fbed3d878,Rohit Bhausaheb kadam,2025-09-25,Completed,2025-09-25 03:10:59.548519+00,9665394224,@gmail.com,Male,LMV,,7500,5500,30 rides/month,Not Applied,Pending,2025-09-25,,30,30
+f98d0c3f-ee77-46eb-9563-797f49d46151,Rajkumar Sidraya Soddi,2026-01-30,Active,2026-01-30 05:31:01.456534+00,8623828485,,Male,LMV,,7500,4000,30 rides/month,Not Applied,Pending,2026-01-30,,10,30
+fb26107e-234c-463f-bc73-1f1be2f3222b,Madhav Prkashrao Hagdale,2026-01-26,Active,2026-01-26 04:59:24.809183+00,8007794678,,Male,LMV,,7500,0,30 rides/month,Not Applied,Pending,2026-01-26,,24,30
+fbec90d1-7669-41e9-b0b5-23b64053f0cd,Himani Dilip Done,2025-09-03,Active,2025-09-03 03:35:51.487723+00,8637799649,,Female,LMV,,7500,7500,30 rides/month,Not Applied,Pending,2025-09-03,,19,30
+fcb6612b-e035-4056-9a07-3daa7b5f90d6,Sanjay Annappa Isure,2025-11-06,Completed,2025-11-06 12:55:58.556504+00,9146142509,@gmail.com,Male,LMV-TR,,7500,4000,30 rides/month,Not Applied,Pending,2025-11-06,,30,30
+fd99c8bd-a24d-4672-aebf-f418d56ca2ad,Dattatry Ashok Waghmode,2025-11-20,Completed,2025-11-20 05:13:55.066821+00,8766534706,,Male,LMV,,7500,4000,30 rides/month,Not Applied,Pending,2025-11-20,,30,30
+fe593cbb-1248-4885-b037-31f5a3a296de,Sangmeshwar Swaminath Khune,2025-12-19,Completed,2025-12-19 12:28:47.192415+00,9730146682,,Male,LMV,,7200,4000,30 rides/month,Not Applied,Pending,2025-12-19,Cash,30,30

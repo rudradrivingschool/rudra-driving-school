@@ -1,158 +1,128 @@
-
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import { Driver } from '@/types/driver';
+// Supabase response typed as any — PostgREST does not infer from service-role queries
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "@/lib/api/client";
+import { toast } from "sonner";
+import { Driver } from "@/types/driver";
 
 export const useDrivers = () => {
-  const [drivers, setDrivers] = useState<Driver[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  const fetchDrivers = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('drivers')
-        .select('*')
-        .order('created_at', { ascending: false });
+  const { data: drivers = [], isLoading: loading } = useQuery({
+    queryKey: ["drivers"],
+    queryFn: async () => {
+      const data = await apiClient.getDrivers();
 
-      if (error) {
-        console.error('Error fetching drivers:', error);
-        toast.error('Failed to load drivers');
-        return;
-      }
+      const formattedDrivers: Driver[] = data.map((driver: any) => ({
+        id: driver.id,
+        name: driver.name,
+        phone: driver.phone || "",
+        email: driver.email,
+        licenseNumber: driver.license_number || "",
+        joinDate: driver.join_date || "",
+        status: (driver.status as "active" | "inactive") || "active",
+        totalRides: driver.total_rides || 0,
+        rides: [],
+        username: driver.username,
+        password: driver.password,
+        role: (driver.role as "admin" | "driver") || "driver",
+      }));
 
-      // Fetch actual ride counts for each driver
-      const formattedDrivers: Driver[] = await Promise.all(
-        data.map(async (driver) => {
-          const { data: ridesData, error: ridesError } = await supabase
-            .from('rides')
-            .select('id, status')
-            .eq('driver_id', driver.id);
+      return formattedDrivers;
+    },
+  });
 
-          const actualTotalRides = ridesData?.length || 0;
+  const addDriverMutation = useMutation({
+    mutationFn: (driverData: Driver) => {
+      return apiClient.createDriver({
+        name: driverData.name,
+        email: driverData.email,
+        phone: driverData.phone,
+        license_number: driverData.licenseNumber,
+        join_date: driverData.joinDate,
+        status: driverData.status,
+        total_rides: driverData.totalRides,
+        username: driverData.username,
+        password: driverData.password,
+        role: driverData.role,
+      });
+    },
+    onSuccess: () => {
+      toast.success("Driver added successfully!");
+      queryClient.invalidateQueries({ queryKey: ["drivers"] });
+    },
+    onError: () => {
+      toast.error("Failed to add driver");
+    },
+  });
 
-          return {
-            id: driver.id,
-            name: driver.name,
-            phone: driver.phone || '',
-            email: driver.email,
-            licenseNumber: driver.license_number || '',
-            joinDate: driver.join_date || '',
-            status: (driver.status as 'active' | 'inactive') || 'active',
-            totalRides: actualTotalRides,
-            rides: [], // Could populate with actual rides if needed
-            username: driver.username,
-            password: driver.password,
-            role: (driver.role as 'admin' | 'driver') || 'driver'
-          };
-        })
-      );
+  const updateDriverMutation = useMutation({
+    mutationFn: ({ driverId, driverData }: { driverId: string; driverData: Driver }) => {
+      return apiClient.updateDriver(driverId, {
+        name: driverData.name,
+        email: driverData.email,
+        phone: driverData.phone,
+        license_number: driverData.licenseNumber,
+        join_date: driverData.joinDate,
+        status: driverData.status,
+        total_rides: driverData.totalRides,
+        username: driverData.username,
+        password: driverData.password,
+        role: driverData.role,
+      });
+    },
+    onSuccess: () => {
+      toast.success("Driver updated successfully!");
+      queryClient.invalidateQueries({ queryKey: ["drivers"] });
+    },
+    onError: () => {
+      toast.error("Failed to update driver");
+    },
+  });
 
-      setDrivers(formattedDrivers);
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('Failed to load drivers');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const deleteDriverMutation = useMutation({
+    mutationFn: (driverId: string) => {
+      return apiClient.deleteDriver(driverId);
+    },
+    onSuccess: () => {
+      toast.success("Driver deleted successfully!");
+      queryClient.invalidateQueries({ queryKey: ["drivers"] });
+    },
+    onError: () => {
+      toast.error("Failed to delete driver");
+    },
+  });
 
   const addDriver = async (driverData: Driver) => {
     try {
-      const { data, error } = await supabase
-        .from('drivers')
-        .insert({
-          name: driverData.name,
-          email: driverData.email,
-          phone: driverData.phone,
-          license_number: driverData.licenseNumber,
-          join_date: driverData.joinDate,
-          status: driverData.status,
-          total_rides: driverData.totalRides,
-          username: driverData.username,
-          password: driverData.password,
-          role: driverData.role
-        })
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Error adding driver:', error);
-        toast.error('Failed to add driver');
-        return false;
-      }
-
-      toast.success('Driver added successfully!');
-      await fetchDrivers();
+      await addDriverMutation.mutateAsync(driverData);
       return true;
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('Failed to add driver');
+    } catch {
       return false;
     }
   };
 
   const updateDriver = async (driverId: string, driverData: Driver) => {
     try {
-      const { error } = await supabase
-        .from('drivers')
-        .update({
-          name: driverData.name,
-          email: driverData.email,
-          phone: driverData.phone,
-          license_number: driverData.licenseNumber,
-          join_date: driverData.joinDate,
-          status: driverData.status,
-          total_rides: driverData.totalRides,
-          username: driverData.username,
-          password: driverData.password,
-          role: driverData.role
-        })
-        .eq('id', driverId);
-
-      if (error) {
-        console.error('Error updating driver:', error);
-        toast.error('Failed to update driver');
-        return false;
-      }
-
-      toast.success('Driver updated successfully!');
-      await fetchDrivers();
+      await updateDriverMutation.mutateAsync({ driverId, driverData });
       return true;
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('Failed to update driver');
+    } catch {
       return false;
     }
   };
 
   const deleteDriver = async (driverId: string) => {
     try {
-      const { error } = await supabase
-        .from('drivers')
-        .delete()
-        .eq('id', driverId);
-
-      if (error) {
-        console.error('Error deleting driver:', error);
-        toast.error('Failed to delete driver');
-        return false;
-      }
-
-      toast.success('Driver deleted successfully!');
-      await fetchDrivers();
+      await deleteDriverMutation.mutateAsync(driverId);
       return true;
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('Failed to delete driver');
+    } catch {
       return false;
     }
   };
 
-  useEffect(() => {
-    fetchDrivers();
-  }, []);
+  const refetch = () => {
+    queryClient.invalidateQueries({ queryKey: ["drivers"] });
+  };
 
   return {
     drivers,
@@ -160,6 +130,6 @@ export const useDrivers = () => {
     addDriver,
     updateDriver,
     deleteDriver,
-    refetch: fetchDrivers
+    refetch,
   };
 };

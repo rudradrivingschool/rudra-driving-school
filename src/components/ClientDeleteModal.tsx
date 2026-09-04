@@ -1,141 +1,69 @@
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Eye, Plus } from 'lucide-react';
-import { Client, Ride } from '@/types/client';
-import { PersonalInfoCard } from './client/PersonalInfoCard';
-import { PackageInfoCard } from './client/PackageInfoCard';
-import { LicenseStatusCard } from './client/LicenseStatusCard';
-import { RideProgressCard } from './client/RideProgressCard';
-import { RideHistoryCard } from './client/RideHistoryCard';
-import { AdditionalNotesCard } from './client/AdditionalNotesCard';
-import { PaymentDialog } from './PaymentDialog';
-import { usePayments } from '@/hooks/usePayments';
-import { useQueryClient } from '@tanstack/react-query';
-import { Ride as CanonicalRide } from '@/hooks/useRides';
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from '@/components/ui/alert-dialog';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
-interface ClientDetailsModalProps {
-  client: Client | null;
-  isOpen: boolean;
-  onClose: () => void;
+interface ClientDeleteModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  clientName: string;
+  onConfirm: () => void;
 }
 
-export const ClientDetailsModal = ({
-  client,
-  isOpen,
-  onClose,
-}: ClientDetailsModalProps) => {
-  const { getPaymentsByAdmission, refetch } = usePayments();
-  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
-  const queryClient = useQueryClient();
+export const ClientDeleteModal: React.FC<ClientDeleteModalProps> = ({
+  open,
+  onOpenChange,
+  clientName,
+  onConfirm,
+}) => {
+  const [confirmText, setConfirmText] = useState('');
 
-  // Read the canonical Ride[] that useRides already placed in the cache.
-  // useRides is the sole owner of ['rides']: it transforms raw API rows into
-  // Ride objects with date: Date and driverName already resolved.
-  // We never register a competing queryFn here — we only read what is cached.
-  const allRides = queryClient.getQueryData<CanonicalRide[]>(['rides']) ?? [];
-
-  // Filter to this client's rides using client_id (with legacy client_name fallback).
-  // The canonical shape already carries driverName and a proper Date — no re-mapping needed.
-  const rideHistory: Ride[] = client
-    ? allRides
-        .filter((r) => {
-          if (r.client_id != null) return r.client_id === client.id;
-          // Legacy rides that pre-date client_id population
-          return r.clientName === client.name && r.client_id == null;
-        })
-        .map((r) => ({
-          id: r.id,
-          date: r.date, // already a Date — no re-construction
-          time: r.time,
-          status: r.status,
-          driverName: r.driverName, // already resolved by useRides
-          car: r.car,
-        }))
-    : [];
-
-  if (!client) return null;
-
-  const existingPayments = getPaymentsByAdmission(client.id);
-  const totalPaid = existingPayments.reduce(
-    (sum, payment) => sum + payment.amount,
-    0,
-  );
-  const remainingBalance = client.fees - totalPaid;
+  React.useEffect(() => {
+    if (!open) setConfirmText('');
+  }, [open]);
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className='w-[95vw] max-w-4xl h-[95vh] max-h-[95vh] overflow-hidden flex flex-col p-0 pt-2 sm:p-6 [&>button]:z-50'>
-        {/* Mobile Header - Fixed */}
-        <DialogHeader className='flex-shrink-0 px-4 py-4 sm:px-0 sm:py-0 border-b sm:border-b-0 bg-white sticky top-0 z-40'>
-          <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0 pr-10 sm:pr-14'>
-            <div className='flex-1 min-w-0'>
-              <DialogTitle className='flex items-center gap-2 text-base sm:text-lg'>
-                <Eye className='w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0' />
-                <span className='truncate'>Client Details - {client.name}</span>
-              </DialogTitle>
-              <DialogDescription className='text-xs sm:text-sm mt-1'>
-                Complete information and ride history for this client
-              </DialogDescription>
-            </div>
-
-            {/* Action Buttons */}
-            <div className='flex items-center gap-2 flex-shrink-0'>
-              {totalPaid < client.fees && (
-                <Button
-                  onClick={() => setShowPaymentDialog(true)}
-                  size='sm'
-                  className='bg-green-600 hover:bg-green-700 text-xs sm:text-sm px-2 sm:px-3 relative z-30'
-                >
-                  <Plus className='w-3 h-3 sm:w-4 sm:h-4 mr-1' />
-                  <span className='hidden xs:inline'>Add Payment</span>
-                  <span className='xs:hidden'>Add Payment</span>
-                </Button>
-              )}
-            </div>
-          </div>
-        </DialogHeader>
-
-        {/* Scrollable Content */}
-        <div className='flex-1 overflow-y-auto px-4 sm:px-0'>
-          <div className='space-y-4 sm:space-y-6 py-4 sm:py-0'>
-            <PersonalInfoCard client={client} />
-            <PackageInfoCard client={client} totalPaid={totalPaid} />
-            <LicenseStatusCard client={client} />
-            <RideProgressCard client={client} />
-            <RideHistoryCard rideHistory={rideHistory} />
-            {client.additionalNotes && (
-              <AdditionalNotesCard notes={client.additionalNotes} />
-            )}
-          </div>
-        </div>
-
-        {/* Desktop Close Button - Fixed at bottom */}
-        <div className='hidden sm:flex justify-end pt-4 border-t flex-shrink-0'>
-          <Button variant='outline' onClick={onClose}>
-            Close
-          </Button>
-        </div>
-
-        {/* Mobile Bottom Padding */}
-        <div className='h-4 sm:hidden flex-shrink-0' />
-      </DialogContent>
-
-      <PaymentDialog
-        isOpen={showPaymentDialog}
-        onClose={() => setShowPaymentDialog(false)}
-        admissionId={client.id}
-        studentName={client.name}
-        existingPayments={existingPayments}
-        remainingBalance={remainingBalance}
-        onPaymentAdded={refetch}
-      />
-    </Dialog>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete Client?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Are you sure you want to delete{' '}
+            <span className='font-semibold'>{clientName}</span>?<br />
+            This action cannot be undone. <br />
+            Please type <span className='font-bold'>delete</span> below to
+            confirm.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <Input
+          autoFocus
+          placeholder='Type delete to confirm'
+          value={confirmText}
+          onChange={(e) => setConfirmText(e.target.value)}
+        />
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction asChild disabled={confirmText !== 'delete'}>
+            <Button
+              variant='default'
+              disabled={confirmText !== 'delete'}
+              onClick={onConfirm}
+              type='button'
+            >
+              Delete
+            </Button>
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };

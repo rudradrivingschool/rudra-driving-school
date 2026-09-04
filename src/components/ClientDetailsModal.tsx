@@ -39,7 +39,7 @@ export const ClientDetailsModal = ({
   // useRides is the sole owner of ['rides']: it transforms raw API rows into
   // Ride objects with date: Date and driverName already resolved.
   // We never register a competing queryFn here — we only read what is cached.
-  const allRides = queryClient.getQueryData<CanonicalRide[]>(['rides']) ?? [];
+  const allRides = (queryClient.getQueryData<CanonicalRide[]>(['rides'])) ?? [];
 
   // Filter to this client's rides using client_id (with legacy client_name fallback).
   // The canonical shape already carries driverName and a proper Date — no re-mapping needed.
@@ -52,7 +52,7 @@ export const ClientDetailsModal = ({
         })
         .map((r) => ({
           id: r.id,
-          date: r.date, // already a Date — no re-construction
+          date: r.date,           // already a Date — no re-construction
           time: r.time,
           status: r.status,
           driverName: r.driverName, // already resolved by useRides
@@ -65,7 +65,7 @@ export const ClientDetailsModal = ({
   const existingPayments = getPaymentsByAdmission(client.id);
   const totalPaid = existingPayments.reduce(
     (sum, payment) => sum + payment.amount,
-    0,
+    0
   );
   const remainingBalance = client.fees - totalPaid;
 

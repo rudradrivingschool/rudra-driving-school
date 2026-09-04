@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -19,8 +19,9 @@ import { Calendar } from '@/components/ui/calendar';
 import { AddRideForm } from './AddRideForm';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
-import { supabase } from '@/integrations/supabase/client';
 import { useRides } from '@/hooks/useRides';
+import { useAdmissions } from '@/hooks/useAdmissions';
+import { useDrivers } from '@/hooks/useDrivers';
 import { RideStatsBanner } from './RideStatsBanner';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatTime12h } from '@/lib/utils';
@@ -77,8 +78,6 @@ type RideClient = {
 };
 
 export const RideManager = ({ userRole }: RideManagerProps) => {
-  const [clients, setClients] = useState<RideClient[]>([]);
-  const [drivers, setDrivers] = useState<Driver[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [rideToEdit, setRideToEdit] = useState<Ride | null>(null);
@@ -87,43 +86,39 @@ export const RideManager = ({ userRole }: RideManagerProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     new Date()
   );
-  const [isLoadingClients, setIsLoadingClients] = useState(false);
-  const [clientProgress, setClientProgress] = useState<Record<string, { completed: number; total: number }>>({});
 
-  // Fetch drivers (same as before)
-  useEffect(() => {
-    const fetchDrivers = async () => {
-      setIsLoadingClients(true);
-      const { data, error } = await supabase
-        .from('drivers')
-        .select('id, name, status,username')
-        .order('created_at', { ascending: false });
+  // Use shared ['drivers'] React Query â€” no direct Supabase fetch needed.
+  const { drivers: allDrivers, loading: driversLoading } = useDrivers();
+  // Active non-root drivers only (same filter as the previous direct fetch)
+  const drivers = allDrivers
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .filter((d) => d.status === 'active' && (d as any).username !== 'root')
+    .map((d) => ({ id: d.id, name: d.name }));
 
-      if (error) {
-        toast.error('Failed to fetch drivers');
-        setDrivers([]);
-      } else {
-        setDrivers(
-          (data || [])
-            .filter(
-              (row: any) =>
-                (row.status?.toLowerCase?.() || '') === 'active' &&
-                row.username !== 'root' // <-- Exclude root user here
-            )
-            .map((row: any) => ({
-              id: row.id,
-              name: row.name,
-            }))
-        );
-      }
-      setIsLoadingClients(false);
+  // Shared admissions data - triggers the ['admissions'] React Query.
+  // Replaces the direct supabase.from('admissions') fetch that was here before.
+  const { clients: admissionsClients } = useAdmissions();
+
+  // Derive client list for dropdown from shared admissions data
+  const clients: RideClient[] = admissionsClients.map((client) => ({
+    id: client.id,
+    name: client.name,
+    status: client.status.toLowerCase() === 'active' ? 'active' : 'inactive',
+  }));
+
+  // Derive clientProgress from shared admissions data (replaces separate Supabase fetch)
+  const clientProgress: Record<string, { completed: number; total: number }> = {};
+  admissionsClients.forEach((client) => {
+    clientProgress[client.id] = {
+      completed: client.ridesCompleted,
+      total: client.totalRides,
     };
-    fetchDrivers();
-  }, []);
+  });
 
-// Use the enhanced rides hook with update and delete functionality
+// Use the enhanced rides hook with update and delete functionality.
+// Pass clients so useRides can derive clientNameToId without its own admissions fetch.
   const { rides, isLoading, addRide, updateRide, deleteRide, clientNameToId } =
-    useRides({ drivers });
+    useRides({ drivers, clients: admissionsClients });
 
   // Auth user to determine current driver
   const { user } = useAuth();
@@ -131,7 +126,9 @@ export const RideManager = ({ userRole }: RideManagerProps) => {
   // Prefer logged-in driver (by id or name), fallback to first
   const currentDriver =
     (user
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ? drivers.find((d) => d.id === (user as any).id) ||
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         drivers.find((d) => d.name === (user as any).name)
       : undefined) ||
     drivers[0] ||
@@ -141,41 +138,6 @@ export const RideManager = ({ userRole }: RideManagerProps) => {
     { id: '2', name: 'MS Baleno' },
     { id: '3', name: 'MS SX4' },
   ];
-
-  // Fetch clients from admissions table (active/inactive) with progress
-  useEffect(() => {
-    const fetchClients = async () => {
-      setIsLoadingClients(true);
-      const { data, error } = await supabase
-        .from('admissions')
-        .select('id, student_name, status, rides_completed, total_rides')
-        .order('student_name', { ascending: true });
-
-      if (error) {
-        toast.error('Failed to fetch clients');
-        setClients([]);
-      } else {
-        const progressMap: Record<string, { completed: number; total: number }> = {};
-        const clientsList = (data || []).map((row: any) => {
-          progressMap[row.id] = {
-            completed: row.rides_completed || 0,
-            total: row.total_rides || 0,
-          };
-          return {
-            id: row.id,
-            name: row.student_name,
-            status: (row.status && row.status.toLowerCase() === 'active'
-              ? 'active'
-              : 'inactive') as 'active' | 'inactive',
-          };
-        });
-        setClients(clientsList);
-        setClientProgress(progressMap);
-      }
-      setIsLoadingClients(false);
-    };
-    fetchClients();
-  }, []);
 
   // Get current date info
   const now = new Date();
@@ -239,7 +201,7 @@ export const RideManager = ({ userRole }: RideManagerProps) => {
                 <div className='flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full'>
                   <CalendarIcon className='w-4 h-4 text-gray-600' />
                   <span className='font-medium text-gray-700'>{formatTime12h(ride.time)}</span>
-                  <span className='text-gray-400'>•</span>
+                  <span className='text-gray-400'>â€¢</span>
                   <span className='text-gray-600 text-xs'>{ride.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                 </div>
               </div>

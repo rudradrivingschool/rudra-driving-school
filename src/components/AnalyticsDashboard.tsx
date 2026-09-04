@@ -46,7 +46,7 @@ import { useExpenses } from '@/hooks/useExpenses';
 export const AnalyticsDashboard = () => {
   const { clients: admissions } = useAdmissions();
   const { drivers } = useDrivers();
-  const { rides } = useRides({ drivers, onProgressUpdate: () => {} });
+  const { rides } = useRides({ drivers, clients: admissions, onProgressUpdate: () => {} });
   const { payments, getTotalCollected } = usePayments();
   const { expenses } = useExpenses();
 
