@@ -7,8 +7,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Eye, Plus, X } from 'lucide-react';
-import { Client } from '@/types/client';
+import { Eye, Plus } from 'lucide-react';
+import { Client, Ride } from '@/types/client';
 import { PersonalInfoCard } from './client/PersonalInfoCard';
 import { PackageInfoCard } from './client/PackageInfoCard';
 import { LicenseStatusCard } from './client/LicenseStatusCard';
@@ -17,6 +17,8 @@ import { RideHistoryCard } from './client/RideHistoryCard';
 import { AdditionalNotesCard } from './client/AdditionalNotesCard';
 import { PaymentDialog } from './PaymentDialog';
 import { usePayments } from '@/hooks/usePayments';
+import { useQueryClient } from '@tanstack/react-query';
+import { Ride as CanonicalRide } from '@/hooks/useRides';
 
 interface ClientDetailsModalProps {
   client: Client | null;
@@ -31,20 +33,39 @@ export const ClientDetailsModal = ({
 }: ClientDetailsModalProps) => {
   const { getPaymentsByAdmission, refetch } = usePayments();
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const queryClient = useQueryClient();
 
-  // DEBUG LOGS
-  console.log('ClientDetailsModal: client', client);
-  if (client) {
-    console.log('ClientDetailsModal: client.rides', client.rides);
-    console.log('ClientDetailsModal: client.rideHistory', client.rideHistory);
-  }
+  // Read the canonical Ride[] that useRides already placed in the cache.
+  // useRides is the sole owner of ['rides']: it transforms raw API rows into
+  // Ride objects with date: Date and driverName already resolved.
+  // We never register a competing queryFn here — we only read what is cached.
+  const allRides = queryClient.getQueryData<CanonicalRide[]>(['rides']) ?? [];
+
+  // Filter to this client's rides using client_id (with legacy client_name fallback).
+  // The canonical shape already carries driverName and a proper Date — no re-mapping needed.
+  const rideHistory: Ride[] = client
+    ? allRides
+        .filter((r) => {
+          if (r.client_id != null) return r.client_id === client.id;
+          // Legacy rides that pre-date client_id population
+          return r.clientName === client.name && r.client_id == null;
+        })
+        .map((r) => ({
+          id: r.id,
+          date: r.date, // already a Date — no re-construction
+          time: r.time,
+          status: r.status,
+          driverName: r.driverName, // already resolved by useRides
+          car: r.car,
+        }))
+    : [];
 
   if (!client) return null;
 
   const existingPayments = getPaymentsByAdmission(client.id);
   const totalPaid = existingPayments.reduce(
     (sum, payment) => sum + payment.amount,
-    0
+    0,
   );
   const remainingBalance = client.fees - totalPaid;
 
@@ -88,7 +109,7 @@ export const ClientDetailsModal = ({
             <PackageInfoCard client={client} totalPaid={totalPaid} />
             <LicenseStatusCard client={client} />
             <RideProgressCard client={client} />
-            <RideHistoryCard rideHistory={client.rideHistory} />
+            <RideHistoryCard rideHistory={rideHistory} />
             {client.additionalNotes && (
               <AdditionalNotesCard notes={client.additionalNotes} />
             )}
