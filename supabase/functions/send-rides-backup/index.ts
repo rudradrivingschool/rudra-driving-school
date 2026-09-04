@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 // SUPABASE EDGE FUNCTION TO SEND ADMISSIONS BACKUP WITH RIDE DATES
 

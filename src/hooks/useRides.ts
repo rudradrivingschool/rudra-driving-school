@@ -1,8 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+// Supabase response typed as any — PostgREST does not infer from service-role queries
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiClient } from '@/lib/api/client';
 import { toast } from 'sonner';
 import { updateAdmissionRideProgress } from './useAdmissionRideProgress';
 import { format as formatDate } from 'date-fns';
+import { Client } from '@/types/client';
 
 // Ride type for this hook
 export interface Ride {
@@ -36,68 +39,62 @@ export interface Car {
 
 export const useRides = ({
   drivers,
+  clients = [],
   onProgressUpdate,
 }: {
   drivers: Driver[];
+  clients?: Client[];
   onProgressUpdate?: () => void;
 }) => {
-  const [rides, setRides] = useState<Ride[]>([]);
-  const [clientNameToId, setClientNameToId] = useState<Record<string, string>>(
-    {}
-  );
-  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
-  // Fetch clients and build name-to-id map
-  const fetchClientsMap = useCallback(async () => {
-    const { data, error } = await supabase
-      .from('admissions')
-      .select('id, student_name');
-
-    if (!error && data) {
-      const map: Record<string, string> = {};
-      data.forEach((row: any) => {
-        map[row.student_name] = row.id;
-      });
-      setClientNameToId(map);
+  // Derive clientNameToId from the clients passed in by the caller.
+  // Callers (RideManager, AnalyticsDashboard, DashboardOverview) all call useAdmissions(),
+  // so this data is already available without any additional network request.
+  const clientNameToId: Record<string, string> = {};
+  clients.forEach((client) => {
+    if (client.name) {
+      clientNameToId[client.name] = client.id;
     }
-  }, []);
+  });
 
   // Fetch all rides from the database
-  const fetchRides = useCallback(async () => {
-    setIsLoading(true);
-    const { data, error } = await supabase
-      .from('rides')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
+  const fetchRides = async () => {
+    try {
+      const data = await apiClient.getRides();
+      return (data || []).map((row: any) => ({
+        id: row.id,
+        clientName: row.client_name,
+        driverName:
+          row.driver_id && drivers.length > 0
+            ? drivers.find((d) => d.id === row.driver_id)?.name || 'Unknown'
+            : 'Unknown',
+        driverId: row.driver_id,
+        client_id: row.client_id,
+        car: row.car || '',
+        date: row.date ? new Date(`${row.date}T00:00:00`) : new Date(),
+        time: row.time || '',
+        status: 'completed',
+        notes: row.notes || '',
+      }));
+    } catch (error) {
       toast.error('Failed to fetch rides');
-      setRides([]);
-    } else {
-      setRides(
-        (data || []).map((row: any) => ({
-          id: row.id,
-          clientName: row.client_name,
-          driverName:
-            row.driver_id && drivers.length > 0
-              ? drivers.find((d) => d.id === row.driver_id)?.name || 'Unknown'
-              : 'Unknown',
-          driverId: row.driver_id,
-          client_id: row.client_id,
-          car: row.car || '',
-          date: row.date ? new Date(`${row.date}T00:00:00`) : new Date(),
-          time: row.time || '',
-          status: 'completed',
-          notes: row.notes || '',
-        }))
-      );
+      return [];
     }
-    setIsLoading(false);
-  }, [drivers]);
+  };
+
+  const {
+    data: rides = [],
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ['rides'],
+    queryFn: fetchRides,
+  });
 
   // Add a new ride (always status "completed")
-  const addRide = useCallback(
-    async ({
+  const addRideMutation = useMutation({
+    mutationFn: async ({
       clientName,
       driverName,
       car,
@@ -114,17 +111,19 @@ export const useRides = ({
     }) => {
       const client_id = clientNameToId[clientName] || null;
       const driver = drivers.find((d) => d.name === driverName);
-      
+
       // Use custom date/time if provided, otherwise use current
       const dateToUse = customDate || new Date();
-      const timeToUse = customTime || dateToUse.toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true,
-      });
+      const timeToUse =
+        customTime ||
+        dateToUse.toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true,
+        });
       const dateStr = formatDate(dateToUse, 'yyyy-MM-dd');
-      setIsLoading(true);
-      const { error } = await supabase.from('rides').insert({
+
+      await apiClient.createRide({
         client_id,
         client_name: clientName,
         driver_id: driver?.id,
@@ -134,30 +133,60 @@ export const useRides = ({
         time: timeToUse,
         status: 'completed',
       });
-      setIsLoading(false);
 
-      if (error) {
-        toast.error('Failed to add ride');
-        return false;
-      } else {
-        toast.success('Ride added successfully!');
-        // Update progress for this client every insert, may complete them
-        if (client_id) {
-          await updateAdmissionRideProgress(client_id, onProgressUpdate);
-        }
-        setTimeout(() => {
-          fetchRides();
-        }, 600);
-        return true;
+      return { client_id };
+    },
+    onSuccess: async ({ client_id }) => {
+      toast.success('Ride added successfully!');
+      queryClient.invalidateQueries({ queryKey: ['rides'] });
+      queryClient.invalidateQueries({ queryKey: ['admissions'] });
+      // Update progress for this client every insert, may complete them
+      if (client_id) {
+        await updateAdmissionRideProgress(client_id, onProgressUpdate);
       }
     },
-    [clientNameToId, drivers, fetchRides, onProgressUpdate]
-  );
+    onError: () => {
+      toast.error('Failed to add ride');
+    },
+  });
+
+  const addRide = async ({
+    clientName,
+    driverName,
+    car,
+    notes,
+    customDate,
+    customTime,
+  }: {
+    clientName: string;
+    driverName: string;
+    car: string;
+    notes?: string;
+    customDate?: Date;
+    customTime?: string;
+  }) => {
+    try {
+      await addRideMutation.mutateAsync({
+        clientName,
+        driverName,
+        car,
+        notes,
+        customDate,
+        customTime,
+      });
+      return true;
+    } catch {
+      return false;
+    }
+  };
 
   // Update an existing ride
-  const updateRide = useCallback(
-    async (
-      rideId: string,
+  const updateRideMutation = useMutation({
+    mutationFn: async ({
+      rideId,
+      rideData,
+    }: {
+      rideId: string;
       rideData: {
         clientName: string;
         driverName: string;
@@ -165,134 +194,111 @@ export const useRides = ({
         notes?: string;
         customDate?: Date;
         customTime?: string;
+      };
+    }) => {
+      const client_id = clientNameToId[rideData.clientName] || null;
+      const driver = drivers.find((d) => d.name === rideData.driverName);
+
+      // Prepare update object
+      const updateData: any = {
+        client_id,
+        client_name: rideData.clientName,
+        driver_id: driver?.id,
+        car: rideData.car,
+        notes: rideData.notes,
+      };
+
+      // Include custom date/time if provided (superadmin feature)
+      if (rideData.customDate) {
+        updateData.date = formatDate(rideData.customDate, 'yyyy-MM-dd');
       }
-    ) => {
-      try {
-        const client_id = clientNameToId[rideData.clientName] || null;
-        const driver = drivers.find((d) => d.name === rideData.driverName);
+      if (rideData.customTime) {
+        updateData.time = rideData.customTime;
+      }
 
-        // Prepare update object
-        const updateData: any = {
-          client_id,
-          client_name: rideData.clientName,
-          driver_id: driver?.id,
-          car: rideData.car,
-          notes: rideData.notes,
-        };
+      await apiClient.updateRide(rideId, updateData);
 
-        // Include custom date/time if provided (superadmin feature)
-        if (rideData.customDate) {
-          updateData.date = formatDate(rideData.customDate, 'yyyy-MM-dd');
-        }
-        if (rideData.customTime) {
-          updateData.time = rideData.customTime;
-        }
+      // Determine affected clients for progress update
+      const oldRide = rides.find((r) => r.id === rideId);
+      const oldClientId = oldRide ? clientNameToId[oldRide.clientName] : null;
+      const clientChanged = oldRide && oldRide.clientName !== rideData.clientName;
 
-        setIsLoading(true);
-        const { error } = await supabase
-          .from('rides')
-          .update(updateData)
-          .eq('id', rideId);
+      return { client_id, oldClientId, clientChanged };
+    },
+    onSuccess: async ({ client_id, oldClientId, clientChanged }) => {
+      toast.success('Ride updated successfully!');
+      queryClient.invalidateQueries({ queryKey: ['rides'] });
+      queryClient.invalidateQueries({ queryKey: ['admissions'] });
+      // Update progress for both old and new clients if they differ
+      if (clientChanged && oldClientId) {
+        await updateAdmissionRideProgress(oldClientId, onProgressUpdate);
+      }
+      // Update progress for new client
+      if (client_id) {
+        await updateAdmissionRideProgress(client_id, onProgressUpdate);
+      }
+    },
+    onError: () => {
+      toast.error('Failed to update ride');
+    },
+  });
 
-        if (error) {
-          console.error('Error updating ride:', error);
-          toast.error('Failed to update ride');
-          return false;
-        }
+  const updateRide = async (
+    rideId: string,
+    rideData: {
+      clientName: string;
+      driverName: string;
+      car: string;
+      notes?: string;
+      customDate?: Date;
+      customTime?: string;
+    },
+  ) => {
+    try {
+      await updateRideMutation.mutateAsync({ rideId, rideData });
+      return true;
+    } catch {
+      return false;
+    }
+  };
 
-        toast.success('Ride updated successfully!');
-
-        // Update progress for both old and new clients if they differ
-        const oldRide = rides.find((r) => r.id === rideId);
-        if (oldRide && oldRide.clientName !== rideData.clientName) {
-          // Update progress for old client
-          const oldClientId = clientNameToId[oldRide.clientName];
-          if (oldClientId) {
-            await updateAdmissionRideProgress(oldClientId, onProgressUpdate);
-          }
-        }
-
-        // Update progress for new client
+  // Delete a ride
+  const deleteRideMutation = useMutation({
+    mutationFn: async (rideId: string) => {
+      const rideToDelete = rides.find((r) => r.id === rideId);
+      await apiClient.deleteRide(rideId);
+      return { rideToDelete };
+    },
+    onSuccess: async ({ rideToDelete }) => {
+      toast.success('Ride deleted successfully!');
+      queryClient.invalidateQueries({ queryKey: ['rides'] });
+      queryClient.invalidateQueries({ queryKey: ['admissions'] });
+      // Update progress for the client after deletion
+      if (rideToDelete) {
+        const client_id = clientNameToId[rideToDelete.clientName];
         if (client_id) {
           await updateAdmissionRideProgress(client_id, onProgressUpdate);
         }
-
-        await fetchRides();
-        return true;
-      } catch (error) {
-        console.error('Error:', error);
-        toast.error('Failed to update ride');
-        return false;
-      } finally {
-        setIsLoading(false);
       }
     },
-    [clientNameToId, drivers, fetchRides, onProgressUpdate, rides]
-  );
-
-  // Delete a ride
-  const deleteRide = useCallback(
-    async (rideId: string) => {
-      try {
-        const rideToDelete = rides.find((r) => r.id === rideId);
-
-        setIsLoading(true);
-        const { error } = await supabase
-          .from('rides')
-          .delete()
-          .eq('id', rideId);
-
-        if (error) {
-          console.error('Error deleting ride:', error);
-          toast.error('Failed to delete ride');
-          return false;
-        }
-
-        toast.success('Ride deleted successfully!');
-
-        // Update progress for the client after deletion
-        if (rideToDelete) {
-          const client_id = clientNameToId[rideToDelete.clientName];
-          if (client_id) {
-            await updateAdmissionRideProgress(client_id, onProgressUpdate);
-          }
-        }
-
-        await fetchRides();
-        return true;
-      } catch (error) {
-        console.error('Error:', error);
-        toast.error('Failed to delete ride');
-        return false;
-      } finally {
-        setIsLoading(false);
-      }
+    onError: () => {
+      toast.error('Failed to delete ride');
     },
-    [fetchRides, onProgressUpdate, clientNameToId, rides]
-  );
+  });
 
-  // Effect: fetch client map and rides on mount, and when drivers change
-  useEffect(() => {
-    fetchClientsMap();
-  }, [fetchClientsMap]);
-  useEffect(() => {
-    fetchRides();
-  }, [fetchRides]);
-
-  // Effect: Check and update admission progress for every ride or client map change (may mark client as Completed)
-  useEffect(() => {
-    const checkAndUpdateAllProgress = async () => {
-      for (const ride of rides) {
-        if (ride.clientName in clientNameToId) {
-          const clientId = clientNameToId[ride.clientName];
-          await updateAdmissionRideProgress(clientId, onProgressUpdate);
-        }
-      }
-    };
-    if (rides.length && Object.keys(clientNameToId).length) {
-      checkAndUpdateAllProgress();
+  const deleteRide = async (rideId: string) => {
+    try {
+      await deleteRideMutation.mutateAsync(rideId);
+      return true;
+    } catch {
+      return false;
     }
-  }, [rides, clientNameToId, onProgressUpdate]);
+  };
+
+  // Preserve fetchRides as a callable refetch wrapper
+  const fetchRidesWrapper = async () => {
+    await refetch();
+  };
 
   return {
     rides,
@@ -300,8 +306,7 @@ export const useRides = ({
     addRide,
     updateRide,
     deleteRide,
-    fetchRides,
+    fetchRides: fetchRidesWrapper,
     clientNameToId,
-    completeRide: async () => true, // not used
   };
 };

@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+// Supabase response typed as any — PostgREST does not infer from service-role queries
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "@/lib/api/client";
+import { toast } from "sonner";
 
 export interface Expense {
   id: string;
@@ -13,130 +15,121 @@ export interface Expense {
 }
 
 export const useExpenses = () => {
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  const fetchExpenses = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('expenses' as any)
-        .select(`
-          *,
-          driver:drivers(name)
-        `)
-        .order('created_at', { ascending: false });
+  const { data: expenses = [], isLoading: loading, refetch: queryRefetch } = useQuery({
+    queryKey: ["expenses"],
+    queryFn: async () => {
+      const data = await apiClient.getExpenses();
 
-      if (error) {
-        console.error('Error fetching expenses:', error);
-        toast.error('Failed to load expenses');
-        return;
+      // Read cached drivers to map driver IDs to names
+      const drivers = queryClient.getQueryData<Expense[]>(["drivers"]);
+      const driverMap = new Map<string, string>();
+      if (drivers && Array.isArray(drivers)) {
+        drivers.forEach((driver: any) => {
+          if (driver.id) {
+            driverMap.set(driver.id, driver.name || "");
+          }
+        });
       }
 
-      const formattedExpenses: Expense[] = (data as any[]).map((expense: any) => ({
+      const formattedExpenses: Expense[] = data.map((expense: any) => ({
         id: expense.id,
         purpose: expense.purpose,
         amount: expense.amount,
-        date: expense.date || '',
+        date: expense.date || "",
         driverId: expense.driver_id || undefined,
-        driverName: expense.driver?.name || '',
-        notes: expense.notes || ''
+        driverName: expense.driver_id
+          ? driverMap.get(expense.driver_id) || ""
+          : "",
+        notes: expense.notes || "",
       }));
 
-      setExpenses(formattedExpenses);
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('Failed to load expenses');
-    } finally {
-      setLoading(false);
-    }
-  };
+      return formattedExpenses;
+    },
+  });
 
-  const addExpense = async (expenseData: Omit<Expense, 'id'>) => {
+  const addExpenseMutation = useMutation({
+    mutationFn: async (expenseData: Omit<Expense, "id">) => {
+      return apiClient.createExpense({
+        purpose: expenseData.purpose,
+        amount: expenseData.amount,
+        date: expenseData.date,
+        driver_id: expenseData.driverId,
+        notes: expenseData.notes,
+      });
+    },
+    onSuccess: () => {
+      toast.success("Expense added successfully!");
+      queryClient.invalidateQueries({ queryKey: ["expenses"] });
+    },
+    onError: () => {
+      toast.error("Failed to add expense");
+    },
+  });
+
+  const updateExpenseMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: Partial<Expense> }) => {
+      return apiClient.updateExpense(id, {
+        purpose: data.purpose,
+        amount: data.amount,
+        date: data.date,
+        driver_id: data.driverId,
+        notes: data.notes,
+      });
+    },
+    onSuccess: () => {
+      toast.success("Expense updated successfully!");
+      queryClient.invalidateQueries({ queryKey: ["expenses"] });
+    },
+    onError: () => {
+      toast.error("Failed to update expense");
+    },
+  });
+
+  const deleteExpenseMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return apiClient.deleteExpense(id);
+    },
+    onSuccess: () => {
+      toast.success("Expense deleted successfully!");
+      queryClient.invalidateQueries({ queryKey: ["expenses"] });
+    },
+    onError: () => {
+      toast.error("Failed to delete expense");
+    },
+  });
+
+  const addExpense = async (expenseData: Omit<Expense, "id">) => {
     try {
-      const { data, error } = await supabase
-        .from('expenses' as any)
-        .insert({
-          purpose: expenseData.purpose,
-          amount: expenseData.amount,
-          date: expenseData.date,
-          driver_id: expenseData.driverId,
-          notes: expenseData.notes
-        })
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Error adding expense:', error);
-        toast.error('Failed to add expense');
-        return false;
-      }
-
-      toast.success('Expense added successfully!');
-      await fetchExpenses();
+      await addExpenseMutation.mutateAsync(expenseData);
       return true;
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('Failed to add expense');
+    } catch {
       return false;
     }
   };
 
   const updateExpense = async (expenseId: string, expenseData: Partial<Expense>) => {
     try {
-      const { error } = await supabase
-        .from('expenses' as any)
-        .update({
-          purpose: expenseData.purpose,
-          amount: expenseData.amount,
-          date: expenseData.date,
-          driver_id: expenseData.driverId,
-          notes: expenseData.notes
-        })
-        .eq('id', expenseId);
-
-      if (error) {
-        console.error('Error updating expense:', error);
-        toast.error('Failed to update expense');
-        return false;
-      }
-
-      toast.success('Expense updated successfully!');
-      await fetchExpenses();
+      await updateExpenseMutation.mutateAsync({ id: expenseId, data: expenseData });
       return true;
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('Failed to update expense');
+    } catch {
       return false;
     }
   };
 
   const deleteExpense = async (expenseId: string) => {
     try {
-      const { error } = await supabase
-        .from('expenses' as any)
-        .delete()
-        .eq('id', expenseId);
-
-      if (error) {
-        console.error('Error deleting expense:', error);
-        toast.error('Failed to delete expense');
-        return false;
-      }
-
-      toast.success('Expense deleted successfully!');
-      await fetchExpenses();
+      await deleteExpenseMutation.mutateAsync(expenseId);
       return true;
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('Failed to delete expense');
+    } catch {
       return false;
     }
   };
 
-  useEffect(() => {
-    fetchExpenses();
-  }, []);
+  const refetch = async () => {
+    await queryRefetch();
+  };
 
   return {
     expenses,
@@ -144,6 +137,6 @@ export const useExpenses = () => {
     addExpense,
     updateExpense,
     deleteExpense,
-    refetch: fetchExpenses
+    refetch,
   };
 };

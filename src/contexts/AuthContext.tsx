@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { apiClient } from '@/lib/api/client';
 
 interface DriverUser {
   id: string;
@@ -7,7 +8,7 @@ interface DriverUser {
   name: string;
   email: string;
   status: string;
-  role: string; // Added role property
+  role: string;
 }
 
 interface AuthContextType {
@@ -42,25 +43,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signIn = async (username: string, password: string) => {
     setLoading(true);
-    // Query for driver by username
-    const { data, error } = await supabase
-      .from('drivers' as any)
-      .select('id, username, password, name, email, status, role')
-      .eq('username', username)
-      .single();
+    try {
+      const response = await apiClient.signIn(username, password);
 
-    // Simple password check (NOTE: in production, store password hashes, never plain text!)
-    if (!error && data && (data as any).password === password) {
-      // Remove password before storing
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...safeUser } = data as any;
-      setUser(safeUser);
-      localStorage.setItem('driver_user', JSON.stringify(safeUser));
+      setUser(response.user);
+      localStorage.setItem('driver_user', JSON.stringify(response.user));
       setLoading(false);
       return { error: null };
+    } catch (error) {
+      console.error('Sign in error:', error);
+      setLoading(false);
+      return {
+        error: {
+          message:
+            error instanceof Error
+              ? error.message
+              : 'An error occurred during sign in',
+        },
+      };
     }
-    setLoading(false);
-    return { error: { message: 'Invalid username or password' } };
   };
 
   const signOut = async () => {
@@ -72,12 +73,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     user,
     loading,
     signIn,
-    signOut
+    signOut,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

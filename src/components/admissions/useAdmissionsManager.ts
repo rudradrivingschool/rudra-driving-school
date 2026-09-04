@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { Client, ClientFormData, SortField, SortDirection } from "@/types/client";
 import { validateClientForm } from "@/utils/validation";
