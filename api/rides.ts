@@ -28,10 +28,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     switch (method) {
       case 'GET': {
         const { client_id, driver_id } = query;
+        const isFiltered = !!(client_id || driver_id);
 
+        // Always request an exact count so the UI can display the true DB total.
+        // For filtered queries the count reflects the filtered set (still accurate).
         let dbQuery = supabase
           .from('rides')
-          .select('*');
+          .select('*', { count: 'exact' });
 
         if (client_id) {
           dbQuery = dbQuery.eq('client_id', client_id as string);
@@ -41,14 +44,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           dbQuery = dbQuery.eq('driver_id', driver_id as string);
         }
 
-        const { data, error } = await dbQuery
+        const { data, error, count } = await dbQuery
           .order('date', { ascending: false });
 
         if (error) {
           return res.status(500).json({ error: 'Failed to fetch rides', message: error.message });
         }
 
-        return res.status(200).json(data || []);
+        // Filtered callers receive the plain array they have always expected.
+        // The unfiltered caller (useRides) receives an envelope with the exact
+        // database total — this lets the UI show the real count even when the
+        // PostgREST row cap (default 1 000) truncates the returned rows.
+        if (isFiltered) {
+          return res.status(200).json(data || []);
+        }
+
+        return res.status(200).json({
+          rides: data || [],
+          totalCount: count ?? (data?.length ?? 0),
+        });
       }
 
       case 'POST': {

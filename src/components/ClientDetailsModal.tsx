@@ -37,10 +37,10 @@ export const ClientDetailsModal = ({
   const queryClient = useQueryClient();
 
   // Read the canonical Ride[] that useRides already placed in the cache.
-  // useRides is the sole owner of ['rides']: it transforms raw API rows into
-  // Ride objects with date: Date and driverName already resolved.
-  // We never register a competing queryFn here — we only read what is cached.
-  const allRides = queryClient.getQueryData<CanonicalRide[]>(['rides']) ?? [];
+  // The cache value is { rides: CanonicalRide[], totalRideCount: number } —
+  // we only need the rides array here for filtering.
+  const ridesCache = queryClient.getQueryData<{ rides: CanonicalRide[]; totalRideCount: number }>(['rides']);
+  const allRides = ridesCache?.rides ?? [];
 
   // Subscribe to ['drivers'] so this component re-renders when useDrivers
   // delivers its data. useDrivers (mounted in DashboardOverview, RideManager,
@@ -69,7 +69,7 @@ export const ClientDetailsModal = ({
         })
         .map((r) => ({
           id: r.id,
-          date: r.date, // already a Date — no re-construction
+          date: r.date,           // already a Date — no re-construction
           time: r.time,
           status: r.status,
           // Resolve from live driver map; fall back to cached value if drivers
@@ -86,7 +86,7 @@ export const ClientDetailsModal = ({
   const existingPayments = getPaymentsByAdmission(client.id);
   const totalPaid = existingPayments.reduce(
     (sum, payment) => sum + payment.amount,
-    0,
+    0
   );
   const remainingBalance = client.fees - totalPaid;
 

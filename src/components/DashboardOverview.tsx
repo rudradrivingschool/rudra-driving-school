@@ -56,7 +56,7 @@ export const DashboardOverview = ({ userRole }: DashboardOverviewProps) => {
 
   const { clients: admissions } = useAdmissions();
   const { drivers } = useDrivers();
-  const { rides } = useRides({ drivers, clients: admissions, onProgressUpdate: handleProgressUpdate });
+  const { rides, totalRideCount } = useRides({ drivers, clients: admissions, onProgressUpdate: handleProgressUpdate });
   const { payments, getTotalCollected } = usePayments();
   const { expenses } = useExpenses();
 
@@ -86,7 +86,7 @@ export const DashboardOverview = ({ userRole }: DashboardOverviewProps) => {
     const monthlyRevenue = thisMonthPayments.reduce((sum, payment) => sum + payment.amount, 0);
     const monthlyExpenseAmount = thisMonthExpenses.reduce((sum, expense) => sum + expense.amount, 0);
     
-    const completedRides = rides.length; // All rides are completed in this system
+    const completedRides = totalRideCount; // Exact DB total via PostgREST count:exact
     
     const licensesPending = admissions.filter(a => 
       a.licenseStatus.learning === 'Applied' || a.licenseStatus.driving === 'Pending'
@@ -104,7 +104,7 @@ export const DashboardOverview = ({ userRole }: DashboardOverviewProps) => {
       licensesPending,
       totalRevenue: getTotalCollected(),
     };
-  }, [admissions, drivers, rides, payments, expenses, getTotalCollected]);
+  }, [admissions, drivers, rides, totalRideCount, payments, expenses, getTotalCollected]);
 
   // Generate last 7 days ride data
   const weeklyRideData = useMemo(() => {

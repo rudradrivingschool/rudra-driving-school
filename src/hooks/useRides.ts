@@ -61,8 +61,13 @@ export const useRides = ({
   // Fetch all rides from the database
   const fetchRides = async () => {
     try {
-      const data = await apiClient.getRides();
-      return (data || []).map((row: any) => ({
+      const response = await apiClient.getRides();
+      // The unfiltered endpoint returns { rides: Row[], totalCount: number }.
+      // totalCount is the exact Supabase count, unaffected by the PostgREST
+      // row cap (default 1 000), so it is safe to use for "Total Rides" stats.
+      const rows = response.rides || [];
+      const totalRideCount: number = response.totalCount ?? rows.length;
+      const mappedRides: Ride[] = rows.map((row: any) => ({
         id: row.id,
         clientName: row.client_name,
         driverName:
@@ -77,20 +82,24 @@ export const useRides = ({
         status: 'completed',
         notes: row.notes || '',
       }));
+      return { rides: mappedRides, totalRideCount };
     } catch (error) {
       toast.error('Failed to fetch rides');
-      return [];
+      return { rides: [], totalRideCount: 0 };
     }
   };
 
   const {
-    data: rides = [],
+    data: ridesData = { rides: [], totalRideCount: 0 },
     isLoading,
     refetch,
   } = useQuery({
     queryKey: ['rides'],
     queryFn: fetchRides,
   });
+
+  const rides = ridesData.rides;
+  const totalRideCount = ridesData.totalRideCount;
 
   // Add a new ride (always status "completed")
   const addRideMutation = useMutation({
@@ -302,6 +311,7 @@ export const useRides = ({
 
   return {
     rides,
+    totalRideCount,
     isLoading,
     addRide,
     updateRide,

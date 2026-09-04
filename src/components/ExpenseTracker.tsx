@@ -170,7 +170,7 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
   // All expenses, unfiltered
   const allExpenses = useMemo(
     () => backendExpenses.map(parseExpense),
-    [backendExpenses],
+    [backendExpenses]
   );
 
   // -- The following "selectedMonth/selectedYear" usage is only for the breakdown section --
@@ -194,37 +194,37 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
       ...new Set(
         allExpenses
           .map((exp) => exp.date.getFullYear())
-          .concat([now.getFullYear()]),
+          .concat([now.getFullYear()])
       ),
     ],
-    [allExpenses, now],
+    [allExpenses, now]
   );
   const years = Array.from(
     { length: Math.max(...allExpenseYears) - Math.min(...allExpenseYears) + 2 },
-    (_, i) => Math.min(...allExpenseYears) + i,
+    (_, i) => Math.min(...allExpenseYears) + i
   );
 
   // Separate selectors for breakdown view
   const [selectedBreakdownMonth, setSelectedBreakdownMonth] = useState(
-    now.getMonth(),
+    now.getMonth()
   );
   const [selectedBreakdownYear, setSelectedBreakdownYear] = useState(
-    now.getFullYear(),
+    now.getFullYear()
   );
 
   // Separate selectors for collections breakdown view
   const [selectedCollectionsMonth, setSelectedCollectionsMonth] = useState(
-    now.getMonth(),
+    now.getMonth()
   );
   const [selectedCollectionsYear, setSelectedCollectionsYear] = useState(
-    now.getFullYear(),
+    now.getFullYear()
   );
 
   // Monthly breakdown data (only for the breakdown card/section)
   const breakdownMonthExpenses = allExpenses.filter(
     (exp) =>
       exp.date.getMonth() === selectedBreakdownMonth &&
-      exp.date.getFullYear() === selectedBreakdownYear,
+      exp.date.getFullYear() === selectedBreakdownYear
   );
 
   // ------- CATEGORY DATA (Global) -------
@@ -244,18 +244,18 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
           filterCategory === 'all' || expense.category === filterCategory;
         return matchesSearch && matchesCategory;
       }),
-    [allExpenses, searchTerm, filterCategory],
+    [allExpenses, searchTerm, filterCategory]
   );
 
   // Chart data (aggregate for filteredGlobalExpenses, i.e., for all filtered, not just month)
   const categoryData = categories
     .map((category) => {
       const categoryExpenses = filteredGlobalExpenses.filter(
-        (expense) => expense.category === category,
+        (expense) => expense.category === category
       );
       const total = categoryExpenses.reduce(
         (sum, expense) => sum + (expense.amount || 0),
-        0,
+        0
       );
       return {
         name: category,
@@ -282,7 +282,7 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
       .filter(
         (expense) =>
           expense.date.getMonth() === date.getMonth() &&
-          expense.date.getFullYear() === date.getFullYear(),
+          expense.date.getFullYear() === date.getFullYear()
       )
       .reduce((sum, expense) => sum + (expense.amount || 0), 0);
 
@@ -708,11 +708,10 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
                   // siblingCount: 1 on mobile (handled via responsive classes), 1 here in logic.
                   // We always show: page 1, last page, and up to 3 pages around current.
                   const delta = 1; // pages each side of current
-                  const range: (number | 'ellipsis-start' | 'ellipsis-end')[] =
-                    [];
+                  const range: (number | 'ellipsis-start' | 'ellipsis-end')[] = [];
 
                   const rangeStart = Math.max(2, listPage - delta);
-                  const rangeEnd = Math.min(totalPages - 1, listPage + delta);
+                  const rangeEnd   = Math.min(totalPages - 1, listPage + delta);
 
                   // First page always shown
                   range.push(1);
@@ -730,10 +729,7 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
                   if (totalPages > 1) range.push(totalPages);
 
                   return range.map((entry) => {
-                    if (
-                      entry === 'ellipsis-start' ||
-                      entry === 'ellipsis-end'
-                    ) {
+                    if (entry === 'ellipsis-start' || entry === 'ellipsis-end') {
                       return (
                         <PaginationItem key={entry}>
                           <PaginationEllipsis />

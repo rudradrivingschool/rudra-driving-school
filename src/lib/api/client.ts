@@ -93,11 +93,21 @@ class APIClient {
   }
 
   // Rides API
-  async getRides(params?: { client_id?: string; driver_id?: string }) {
+  //
+  // Overload 1 – unfiltered: returns the envelope { rides, totalCount } that
+  //   api/rides.ts sends when no filter params are present.  Only useRides()
+  //   calls this form; it uses totalCount for the "Total Rides" stat.
+  //
+  // Overload 2 – filtered (client_id / driver_id present): returns the plain
+  //   Row[] that every other consumer has always expected.  The API still
+  //   returns an array for filtered requests, so no change needed downstream.
+  getRides(): Promise<{ rides: any[]; totalCount: number }>;
+  getRides(params: { client_id?: string; driver_id?: string }): Promise<any[]>;
+  async getRides(params?: { client_id?: string; driver_id?: string }): Promise<any> {
     const queryString = params
       ? '?' + new URLSearchParams(params as any).toString()
       : '';
-    return this.request<any[]>(`rides${queryString}`);
+    return this.request<any>(`rides${queryString}`);
   }
 
   async createRide(data: any) {

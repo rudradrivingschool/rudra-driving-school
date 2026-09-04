@@ -46,7 +46,7 @@ import { useExpenses } from '@/hooks/useExpenses';
 export const AnalyticsDashboard = () => {
   const { clients: admissions } = useAdmissions();
   const { drivers } = useDrivers();
-  const { rides } = useRides({ drivers, clients: admissions, onProgressUpdate: () => {} });
+  const { rides, totalRideCount } = useRides({ drivers, clients: admissions, onProgressUpdate: () => {} });
   const { payments, getTotalCollected } = usePayments();
   const { expenses } = useExpenses();
 
@@ -93,7 +93,7 @@ export const AnalyticsDashboard = () => {
       0
     );
 
-    const completedRides = rides.length; // All rides are completed in this system
+    const completedRides = totalRideCount; // Exact DB total via PostgREST count:exact
 
     const totalExpenses = expenses.reduce(
       (sum, expense) => sum + expense.amount,
@@ -112,7 +112,7 @@ export const AnalyticsDashboard = () => {
       totalExpenses,
       totalRevenue: getTotalCollected(),
     };
-  }, [admissions, drivers, rides, payments, expenses, getTotalCollected]);
+  }, [admissions, drivers, rides, totalRideCount, payments, expenses, getTotalCollected]);
 
   // Generate last 7 days ride data
   const weeklyRideData = useMemo(() => {
