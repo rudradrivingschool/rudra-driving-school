@@ -83,7 +83,7 @@ export const ExpensesBreakdown: React.FC<ExpensesBreakdownProps> = ({
             <SelectTrigger className='w-full sm:w-[140px] max-w-full bg-white border-red-200'>
               <SelectValue placeholder='Month' />
             </SelectTrigger>
-            <SelectContent position='item-aligned'>
+            <SelectContent>
               {months.map((month, idx) => (
                 <SelectItem key={month} value={idx.toString()}>
                   {month}
@@ -98,7 +98,7 @@ export const ExpensesBreakdown: React.FC<ExpensesBreakdownProps> = ({
             <SelectTrigger className='w-full sm:w-[110px] max-w-full bg-white border-red-200'>
               <SelectValue placeholder='Year' />
             </SelectTrigger>
-            <SelectContent position='item-aligned'>
+            <SelectContent>
               {years.map((year) => (
                 <SelectItem key={year} value={year.toString()}>
                   {year}
