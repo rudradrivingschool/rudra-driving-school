@@ -42,6 +42,7 @@ interface Ride {
   id: string;
   clientName: string;
   driverName: string;
+  driverId?: string; // stable FK — used to resolve display name at render time
   car: string;
   date: Date;
   time: string;
@@ -84,7 +85,7 @@ export const RideManager = ({ userRole }: RideManagerProps) => {
   const [rideToDelete, setRideToDelete] = useState<Ride | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-    new Date()
+    new Date(),
   );
 
   // Use shared ['drivers'] React Query â€” no direct Supabase fetch needed.
@@ -107,7 +108,8 @@ export const RideManager = ({ userRole }: RideManagerProps) => {
   }));
 
   // Derive clientProgress from shared admissions data (replaces separate Supabase fetch)
-  const clientProgress: Record<string, { completed: number; total: number }> = {};
+  const clientProgress: Record<string, { completed: number; total: number }> =
+    {};
   admissionsClients.forEach((client) => {
     clientProgress[client.id] = {
       completed: client.ridesCompleted,
@@ -115,8 +117,8 @@ export const RideManager = ({ userRole }: RideManagerProps) => {
     };
   });
 
-// Use the enhanced rides hook with update and delete functionality.
-// Pass clients so useRides can derive clientNameToId without its own admissions fetch.
+  // Use the enhanced rides hook with update and delete functionality.
+  // Pass clients so useRides can derive clientNameToId without its own admissions fetch.
   const { rides, isLoading, addRide, updateRide, deleteRide, clientNameToId } =
     useRides({ drivers, clients: admissionsClients });
 
@@ -124,15 +126,13 @@ export const RideManager = ({ userRole }: RideManagerProps) => {
   const { user } = useAuth();
 
   // Prefer logged-in driver (by id or name), fallback to first
-  const currentDriver =
-    (user
+  const currentDriver = (user
+    ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      drivers.find((d) => d.id === (user as any).id) ||
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ? drivers.find((d) => d.id === (user as any).id) ||
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        drivers.find((d) => d.name === (user as any).name)
-      : undefined) ||
-    drivers[0] ||
-    { id: '', name: '' };
+      drivers.find((d) => d.name === (user as any).name)
+    : undefined) ||
+    drivers[0] || { id: '', name: '' };
   const cars: Car[] = [
     { id: '1', name: 'Tata Harrier' },
     { id: '2', name: 'MS Baleno' },
@@ -149,19 +149,20 @@ export const RideManager = ({ userRole }: RideManagerProps) => {
     (r) =>
       r.status === 'completed' &&
       r.date.getMonth() === currentMonth &&
-      r.date.getFullYear() === currentYear
+      r.date.getFullYear() === currentYear,
   );
 
   // Filter rides by selected date
   const filteredRides = selectedDate
     ? rides.filter(
         (ride) =>
-          format(ride.date, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd')
+          format(ride.date, 'yyyy-MM-dd') ===
+          format(selectedDate, 'yyyy-MM-dd'),
       )
     : rides;
 
   const todayRides = rides.filter(
-    (ride) => ride.date.toDateString() === new Date().toDateString()
+    (ride) => ride.date.toDateString() === new Date().toDateString(),
   );
 
   // RideCard displays each ride (with superadmin actions)
@@ -185,7 +186,13 @@ export const RideManager = ({ userRole }: RideManagerProps) => {
                 </h3>
                 <div className='flex items-center gap-2 text-sm text-gray-600'>
                   <User className='w-4 h-4' />
-                  <span>{ride.driverName}</span>
+                  <span>
+                    {/* Resolve from live drivers list; fall back to cached value
+                        if the driver has been deleted or drivers haven't loaded yet. */}
+                    {(ride.driverId &&
+                      drivers.find((d) => d.id === ride.driverId)?.name) ||
+                      ride.driverName}
+                  </span>
                 </div>
               </div>
 
@@ -196,13 +203,20 @@ export const RideManager = ({ userRole }: RideManagerProps) => {
                   <Car className='w-4 h-4 text-blue-600' />
                   <span className='font-medium text-blue-900'>{ride.car}</span>
                 </div>
-                
+
                 {/* Date & Time */}
                 <div className='flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full'>
                   <CalendarIcon className='w-4 h-4 text-gray-600' />
-                  <span className='font-medium text-gray-700'>{formatTime12h(ride.time)}</span>
-                  <span className='text-gray-400'>â€¢</span>
-                  <span className='text-gray-600 text-xs'>{ride.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                  <span className='font-medium text-gray-700'>
+                    {formatTime12h(ride.time)}
+                  </span>
+                  <span className='text-gray-400'>&bull;</span>
+                  <span className='text-gray-600 text-xs'>
+                    {ride.date.toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                    })}
+                  </span>
                 </div>
               </div>
 
@@ -222,19 +236,23 @@ export const RideManager = ({ userRole }: RideManagerProps) => {
                   <div className='bg-gradient-to-br from-red-600 via-red-500 to-orange-500 text-white px-5 py-3 rounded-xl shadow-lg relative overflow-hidden'>
                     {/* Animated Background Effect */}
                     <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/badge:translate-x-full transition-transform duration-700'></div>
-                    
+
                     {/* Content */}
                     <div className='relative z-10 text-center'>
                       <div className='flex items-baseline justify-center gap-1 mb-1'>
-                        <span className='text-3xl font-black leading-none'>{currentRide}</span>
-                        <span className='text-sm font-bold opacity-90'>/{totalRides}</span>
+                        <span className='text-3xl font-black leading-none'>
+                          {currentRide}
+                        </span>
+                        <span className='text-sm font-bold opacity-90'>
+                          /{totalRides}
+                        </span>
                       </div>
                       <div className='text-[10px] font-bold uppercase tracking-widest opacity-90'>
                         Rides Done
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Remaining Badge */}
                   <div className='absolute -bottom-2 -right-2 bg-white text-red-600 px-2 py-1 rounded-full text-xs font-bold shadow-md border-2 border-red-600'>
                     {remaining} left
@@ -304,7 +322,7 @@ export const RideManager = ({ userRole }: RideManagerProps) => {
     }
   };
 
-// Update ride handler using the hook
+  // Update ride handler using the hook
   const handleUpdateRide = async (rideData: {
     clientName: string;
     driverName: string;
@@ -333,7 +351,7 @@ export const RideManager = ({ userRole }: RideManagerProps) => {
     }
   };
 
-// Handle save ride (for new rides)
+  // Handle save ride (for new rides)
   const handleSaveRide = async (rideData: {
     clientName: string;
     driverName: string;
