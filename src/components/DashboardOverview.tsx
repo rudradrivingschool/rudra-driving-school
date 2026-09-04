@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo } from 'react';
 import {
   Card,
   CardContent,
@@ -42,21 +42,15 @@ import { useDrivers } from '@/hooks/useDrivers';
 import { useRides } from '@/hooks/useRides';
 import { usePayments } from '@/hooks/usePayments';
 import { useExpenses } from '@/hooks/useExpenses';
-import { useQueryClient } from '@tanstack/react-query';
 
 interface DashboardOverviewProps {
   userRole: string;
 }
 
 export const DashboardOverview = ({ userRole }: DashboardOverviewProps) => {
-  const queryClient = useQueryClient();
-  const handleProgressUpdate = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: ["admissions"] });
-  }, [queryClient]);
-
   const { clients: admissions } = useAdmissions();
   const { drivers } = useDrivers();
-  const { rides } = useRides({ drivers, clients: admissions, onProgressUpdate: handleProgressUpdate });
+  const { rides } = useRides({ drivers, onProgressUpdate: () => {} });
   const { payments, getTotalCollected } = usePayments();
   const { expenses } = useExpenses();
 

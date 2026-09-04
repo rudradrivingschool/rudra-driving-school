@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { apiClient } from '@/lib/api/client';
-import { Ride } from '@/types/client';
+import { supabase } from "@/integrations/supabase/client";
+import { Ride } from "@/types/client";
 
 /**
  * Fetch all rides and progress for a client (by client_id, fallback to name)
@@ -8,87 +7,101 @@ import { Ride } from '@/types/client';
  */
 export async function fetchClientRides(
   clientId: string,
-  clientName: string,
+  clientName: string
 ): Promise<{
   progress: { completed: number; total: number };
   rideHistory: Ride[];
 }> {
   // Step 1: Fetch rides by client_id (primary)
-  const rides = await apiClient.getRides({ client_id: clientId });
+  let { data: rides, error } = await supabase
+    .from("rides" as any)
+    .select("*")
+    .eq("client_id", clientId);
 
-  if (rides && rides.length > 0) {
+  if (!error && rides && rides.length > 0) {
     // Extract all unique driver_ids for lookup
     const uniqueDriverIds = Array.from(
       new Set(
         (rides as any[])
           .map((r: any) => r.driver_id)
-          .filter((id): id is string => !!id && typeof id === 'string'),
-      ),
+          .filter((id): id is string => !!id && typeof id === "string")
+      )
     );
 
     // Fetch driver names in one go
     let driverMap: Record<string, string> = {};
     if (uniqueDriverIds.length > 0) {
-      const drivers = await apiClient.getDrivers();
-      driverMap = drivers
-        .filter((d: any) => uniqueDriverIds.includes(d.id))
-        .reduce((acc: Record<string, string>, d: any) => {
-          acc[d.id] = d.name;
-          return acc;
-        }, {});
+      const { data: drivers, error: driverError } = await supabase
+        .from("drivers" as any)
+        .select("id, name")
+        .in("id", uniqueDriverIds);
+      if (!driverError && drivers) {
+        driverMap = (drivers as any[]).reduce(
+          (acc: Record<string, string>, d: any) => {
+            acc[d.id] = d.name;
+            return acc;
+          },
+          {}
+        );
+      }
     }
 
-    const completed = (rides as any[]).filter(
-      (r: any) => r.status?.toLowerCase() === 'completed',
+    const completed = (rides as any[]).filter((r: any) =>
+      r.status?.toLowerCase() === "completed"
     ).length;
     const rideHistory: Ride[] = (rides as any[]).map((r: any) => ({
       id: r.id,
       date: new Date(r.date),
-      time: r.time ?? '',
-      status: r.status as Ride['status'],
-      driverName: driverMap[r.driver_id] || 'Unknown',
-      car: r.car || '',
+      time: r.time ?? "",
+      status: r.status as Ride["status"],
+      driverName: driverMap[r.driver_id] || "Unknown",
+      car: r.car || "",
     }));
     return { progress: { completed, total: rides.length }, rideHistory };
   }
 
   // Step 2: Fallback to legacy rides - by client_name if no rides (client_id is null, use client_name)
-  const allRides = await apiClient.getRides();
+  let { data: legacy, error: legacyErr } = await supabase
+    .from("rides" as any)
+    .select("*")
+    .is("client_id", null)
+    .eq("client_name", clientName);
 
-  // Filter for rides where client_name matches and client_id is null
-  const legacy = (allRides as any[]).filter(
-    (r: any) => r.client_name === clientName && r.client_id === null,
-  );
-
-  if (legacy && legacy.length > 0) {
+  if (!legacyErr && legacy && legacy.length > 0) {
     // Extract unique driver_ids for legacy rides
     const uniqueDriverIds = Array.from(
       new Set(
         (legacy as any[])
           .map((r: any) => r.driver_id)
-          .filter((id): id is string => !!id && typeof id === 'string'),
-      ),
+          .filter((id): id is string => !!id && typeof id === "string")
+      )
     );
     let driverMap: Record<string, string> = {};
     if (uniqueDriverIds.length > 0) {
-      const drivers = await apiClient.getDrivers();
-      driverMap = drivers
-        .filter((d: any) => uniqueDriverIds.includes(d.id))
-        .reduce((acc: Record<string, string>, d: any) => {
-          acc[d.id] = d.name;
-          return acc;
-        }, {});
+      const { data: drivers, error: driverError } = await supabase
+        .from("drivers" as any)
+        .select("id, name")
+        .in("id", uniqueDriverIds);
+      if (!driverError && drivers) {
+        driverMap = (drivers as any[]).reduce(
+          (acc: Record<string, string>, d: any) => {
+            acc[d.id] = d.name;
+            return acc;
+          },
+          {}
+        );
+      }
     }
-    const completed = (legacy as any[]).filter(
-      (r: any) => r.status?.toLowerCase() === 'completed',
+    const completed = (legacy as any[]).filter((r: any) =>
+      r.status?.toLowerCase() === "completed"
     ).length;
     const rideHistory: Ride[] = (legacy as any[]).map((r: any) => ({
       id: r.id,
       date: new Date(r.date),
-      time: r.time ?? '',
-      status: r.status as Ride['status'],
-      driverName: driverMap[r.driver_id] || 'Unknown',
-      car: r.car || '',
+      time: r.time ?? "",
+      status: r.status as Ride["status"],
+      driverName: driverMap[r.driver_id] || "Unknown",
+      car: r.car || "",
     }));
     return { progress: { completed, total: legacy.length }, rideHistory };
   }

@@ -1,5 +1,0 @@
-id,username,password,name,email,phone,license_number,join_date,status,created_at,updated_at,role,total_rides
-0ff87af9-8915-4697-add2-457aef195844,rushikesh,1234,Rushikesh Pawar,rukeshsh@gmail.com,7666097688,,2025-07-30,active,2025-07-30 15:19:27.663118+00,2025-07-30 15:19:27.663118+00,driver,0
-42b2f5fa-c4f8-4157-b3fa-10bb732abb04,sunny,Rudra@0707,Sunny Mane,sunnymane0707@gmail.com,8087405039,,2025-07-30,active,2025-07-30 08:37:06.325145+00,2025-07-30 08:37:06.325145+00,superadmin,0
-a965d607-9a14-4878-810a-298ef42d3797,sachin,1234,Sachin Hatture,sachin@gmail.com,9021666168,,2025-07-30,active,2025-07-30 10:27:30.175961+00,2025-07-30 10:27:30.175961+00,admin,0
-d4699f10-e88b-416d-9a27-fed12a3ed5f3,root,dontknow,root,root@gmail.com,8888888888,,2025-07-30,active,2025-07-30 08:36:32.061596+00,2025-07-30 08:36:32.061596+00,superadmin,0

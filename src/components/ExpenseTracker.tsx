@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useMemo, useEffect } from 'react';
 import {
   Card,

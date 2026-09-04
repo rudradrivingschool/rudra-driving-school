@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,7 +8,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Eye, Plus, X } from 'lucide-react';
-import { Client, Ride } from '@/types/client';
+import { Client } from '@/types/client';
 import { PersonalInfoCard } from './client/PersonalInfoCard';
 import { PackageInfoCard } from './client/PackageInfoCard';
 import { LicenseStatusCard } from './client/LicenseStatusCard';
@@ -18,8 +17,6 @@ import { RideHistoryCard } from './client/RideHistoryCard';
 import { AdditionalNotesCard } from './client/AdditionalNotesCard';
 import { PaymentDialog } from './PaymentDialog';
 import { usePayments } from '@/hooks/usePayments';
-import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '@/lib/api/client';
 
 interface ClientDetailsModalProps {
   client: Client | null;
@@ -35,49 +32,12 @@ export const ClientDetailsModal = ({
   const { getPaymentsByAdmission, refetch } = usePayments();
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
 
-  // Subscribe to the shared ['rides'] query — deduplicates against useRides() cache.
-  // queryFn only fires if cache is cold (e.g., Admissions tab opened before Rides tab).
-  const { data: allRidesRaw = [] } = useQuery({
-    queryKey: ['rides'],
-    queryFn: async () => {
-      const data = await apiClient.getRides();
-      return data || [];
-    },
-    enabled: isOpen && client !== null,
-  });
-
-  // Subscribe to the shared ['drivers'] query — deduplicates against useDrivers() cache.
-  const { data: allDriversRaw = [] } = useQuery({
-    queryKey: ['drivers'],
-    queryFn: async () => {
-      const data = await apiClient.getDrivers();
-      return data || [];
-    },
-    enabled: isOpen && client !== null,
-  });
-
-  // Build driver id->name map from shared cache
-  const driverById: Record<string, string> = {};
-  (allDriversRaw as any[]).forEach((d: any) => {
-    driverById[d.id] = d.name;
-  });
-
-  // Derive rideHistory for this client by in-memory join on client_id (with legacy name fallback)
-  const rideHistory: Ride[] = (allRidesRaw as any[])
-    .filter((r: any) => {
-      if (client === null) return false;
-      if (r.client_id != null) return r.client_id === client.id;
-      // Legacy rides: matched by client_name, no client_id
-      return r.client_name === client.name && r.client_id === null;
-    })
-    .map((r: any) => ({
-      id: r.id,
-      date: r.date ? new Date(`${r.date}T00:00:00`) : new Date(),
-      time: r.time ?? '',
-      status: r.status as Ride['status'],
-      driverName: driverById[r.driver_id] || 'Unknown',
-      car: r.car || '',
-    }));
+  // DEBUG LOGS
+  console.log('ClientDetailsModal: client', client);
+  if (client) {
+    console.log('ClientDetailsModal: client.rides', client.rides);
+    console.log('ClientDetailsModal: client.rideHistory', client.rideHistory);
+  }
 
   if (!client) return null;
 
@@ -128,7 +88,7 @@ export const ClientDetailsModal = ({
             <PackageInfoCard client={client} totalPaid={totalPaid} />
             <LicenseStatusCard client={client} />
             <RideProgressCard client={client} />
-            <RideHistoryCard rideHistory={rideHistory} />
+            <RideHistoryCard rideHistory={client.rideHistory} />
             {client.additionalNotes && (
               <AdditionalNotesCard notes={client.additionalNotes} />
             )}

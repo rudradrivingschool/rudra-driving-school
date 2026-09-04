@@ -61,7 +61,7 @@ export const DriverForm = ({
         return;
       }
     }
-    const phoneRegex = /^\+?[\d\s\-()]+$/;
+    const phoneRegex = /^\+?[\d\s\-\(\)]+$/;
     if (!phoneRegex.test(formData.phone)) {
       toast.error('Please enter a valid phone number');
       return;
