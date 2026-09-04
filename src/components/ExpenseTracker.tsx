@@ -82,6 +82,7 @@ import { useAdmissions } from '@/hooks/useAdmissions';
 import {
   Pagination,
   PaginationContent,
+  PaginationEllipsis,
   PaginationItem,
   PaginationPrevious,
   PaginationNext,
@@ -169,7 +170,7 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
   // All expenses, unfiltered
   const allExpenses = useMemo(
     () => backendExpenses.map(parseExpense),
-    [backendExpenses]
+    [backendExpenses],
   );
 
   // -- The following "selectedMonth/selectedYear" usage is only for the breakdown section --
@@ -193,37 +194,37 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
       ...new Set(
         allExpenses
           .map((exp) => exp.date.getFullYear())
-          .concat([now.getFullYear()])
+          .concat([now.getFullYear()]),
       ),
     ],
-    [allExpenses, now]
+    [allExpenses, now],
   );
   const years = Array.from(
     { length: Math.max(...allExpenseYears) - Math.min(...allExpenseYears) + 2 },
-    (_, i) => Math.min(...allExpenseYears) + i
+    (_, i) => Math.min(...allExpenseYears) + i,
   );
 
   // Separate selectors for breakdown view
   const [selectedBreakdownMonth, setSelectedBreakdownMonth] = useState(
-    now.getMonth()
+    now.getMonth(),
   );
   const [selectedBreakdownYear, setSelectedBreakdownYear] = useState(
-    now.getFullYear()
+    now.getFullYear(),
   );
 
   // Separate selectors for collections breakdown view
   const [selectedCollectionsMonth, setSelectedCollectionsMonth] = useState(
-    now.getMonth()
+    now.getMonth(),
   );
   const [selectedCollectionsYear, setSelectedCollectionsYear] = useState(
-    now.getFullYear()
+    now.getFullYear(),
   );
 
   // Monthly breakdown data (only for the breakdown card/section)
   const breakdownMonthExpenses = allExpenses.filter(
     (exp) =>
       exp.date.getMonth() === selectedBreakdownMonth &&
-      exp.date.getFullYear() === selectedBreakdownYear
+      exp.date.getFullYear() === selectedBreakdownYear,
   );
 
   // ------- CATEGORY DATA (Global) -------
@@ -243,18 +244,18 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
           filterCategory === 'all' || expense.category === filterCategory;
         return matchesSearch && matchesCategory;
       }),
-    [allExpenses, searchTerm, filterCategory]
+    [allExpenses, searchTerm, filterCategory],
   );
 
   // Chart data (aggregate for filteredGlobalExpenses, i.e., for all filtered, not just month)
   const categoryData = categories
     .map((category) => {
       const categoryExpenses = filteredGlobalExpenses.filter(
-        (expense) => expense.category === category
+        (expense) => expense.category === category,
       );
       const total = categoryExpenses.reduce(
         (sum, expense) => sum + (expense.amount || 0),
-        0
+        0,
       );
       return {
         name: category,
@@ -281,7 +282,7 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
       .filter(
         (expense) =>
           expense.date.getMonth() === date.getMonth() &&
-          expense.date.getFullYear() === date.getFullYear()
+          expense.date.getFullYear() === date.getFullYear(),
       )
       .reduce((sum, expense) => sum + (expense.amount || 0), 0);
 
@@ -682,9 +683,10 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
 
         {/* Pagination Controls */}
         {totalPages > 1 && (
-          <div className='flex justify-center pt-6'>
+          <div className='flex justify-center pt-6 max-w-full overflow-x-hidden'>
             <Pagination>
-              <PaginationContent>
+              <PaginationContent className='flex-wrap gap-y-1'>
+                {/* Previous */}
                 <PaginationItem>
                   <PaginationPrevious
                     href='#'
@@ -697,20 +699,65 @@ export const ExpenseTracker = ({ userRole }: ExpenseTrackerProps) => {
                     }
                   />
                 </PaginationItem>
-                {Array.from({ length: totalPages }).map((_, i) => (
-                  <PaginationItem key={i}>
-                    <PaginationLink
-                      href='#'
-                      isActive={i + 1 === listPage}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setListPage(i + 1);
-                      }}
-                    >
-                      {i + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
+
+                {/* Windowed page numbers with ellipsis.
+                    Window = 1 sibling each side of current page on mobile (±1),
+                    2 siblings on desktop (±2), plus always-visible first/last. */}
+                {(() => {
+                  // Build the set of page numbers to show, then render with ellipsis gaps.
+                  // siblingCount: 1 on mobile (handled via responsive classes), 1 here in logic.
+                  // We always show: page 1, last page, and up to 3 pages around current.
+                  const delta = 1; // pages each side of current
+                  const range: (number | 'ellipsis-start' | 'ellipsis-end')[] =
+                    [];
+
+                  const rangeStart = Math.max(2, listPage - delta);
+                  const rangeEnd = Math.min(totalPages - 1, listPage + delta);
+
+                  // First page always shown
+                  range.push(1);
+
+                  // Ellipsis before window
+                  if (rangeStart > 2) range.push('ellipsis-start');
+
+                  // Window around current page
+                  for (let p = rangeStart; p <= rangeEnd; p++) range.push(p);
+
+                  // Ellipsis after window
+                  if (rangeEnd < totalPages - 1) range.push('ellipsis-end');
+
+                  // Last page always shown (when totalPages > 1)
+                  if (totalPages > 1) range.push(totalPages);
+
+                  return range.map((entry) => {
+                    if (
+                      entry === 'ellipsis-start' ||
+                      entry === 'ellipsis-end'
+                    ) {
+                      return (
+                        <PaginationItem key={entry}>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      );
+                    }
+                    return (
+                      <PaginationItem key={entry}>
+                        <PaginationLink
+                          href='#'
+                          isActive={entry === listPage}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setListPage(entry);
+                          }}
+                        >
+                          {entry}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  });
+                })()}
+
+                {/* Next */}
                 <PaginationItem>
                   <PaginationNext
                     href='#'
