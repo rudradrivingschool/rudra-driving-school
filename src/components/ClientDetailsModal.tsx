@@ -17,8 +17,9 @@ import { RideHistoryCard } from './client/RideHistoryCard';
 import { AdditionalNotesCard } from './client/AdditionalNotesCard';
 import { PaymentDialog } from './PaymentDialog';
 import { usePayments } from '@/hooks/usePayments';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { Ride as CanonicalRide } from '@/hooks/useRides';
+import { Driver } from '@/types/driver';
 
 interface ClientDetailsModalProps {
   client: Client | null;
@@ -39,10 +40,26 @@ export const ClientDetailsModal = ({
   // useRides is the sole owner of ['rides']: it transforms raw API rows into
   // Ride objects with date: Date and driverName already resolved.
   // We never register a competing queryFn here — we only read what is cached.
-  const allRides = (queryClient.getQueryData<CanonicalRide[]>(['rides'])) ?? [];
+  const allRides = queryClient.getQueryData<CanonicalRide[]>(['rides']) ?? [];
+
+  // Subscribe to ['drivers'] so this component re-renders when useDrivers
+  // delivers its data. useDrivers (mounted in DashboardOverview, RideManager,
+  // etc.) is the sole fetch owner — it populates this cache entry.
+  // enabled: false means this observer never fires a network request;
+  // it only reads and subscribes to the existing cache. When useDrivers
+  // updates ['drivers'], React Query notifies all observers including this
+  // one, triggering a re-render with the fresh driver list.
+  const { data: allDrivers = [] } = useQuery<Driver[]>({
+    queryKey: ['drivers'],
+    queryFn: () => Promise.resolve([] as Driver[]),
+    enabled: false,
+  });
+  const driverById = new Map(allDrivers.map((d) => [d.id, d.name]));
 
   // Filter to this client's rides using client_id (with legacy client_name fallback).
-  // The canonical shape already carries driverName and a proper Date — no re-mapping needed.
+  // driverName is resolved HERE from the current driver map, not from the stale
+  // value baked into the rides cache when the queryFn ran (which may have seen
+  // drivers = [] and permanently written 'Unknown').
   const rideHistory: Ride[] = client
     ? allRides
         .filter((r) => {
@@ -52,10 +69,14 @@ export const ClientDetailsModal = ({
         })
         .map((r) => ({
           id: r.id,
-          date: r.date,           // already a Date — no re-construction
+          date: r.date, // already a Date — no re-construction
           time: r.time,
           status: r.status,
-          driverName: r.driverName, // already resolved by useRides
+          // Resolve from live driver map; fall back to cached value if drivers
+          // are genuinely absent (e.g. network error), then to 'Unknown'.
+          driverName: r.driverId
+            ? (driverById.get(r.driverId) ?? r.driverName)
+            : r.driverName,
           car: r.car,
         }))
     : [];
@@ -65,7 +86,7 @@ export const ClientDetailsModal = ({
   const existingPayments = getPaymentsByAdmission(client.id);
   const totalPaid = existingPayments.reduce(
     (sum, payment) => sum + payment.amount,
-    0
+    0,
   );
   const remainingBalance = client.fees - totalPaid;
 
