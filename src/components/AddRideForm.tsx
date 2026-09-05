@@ -5,8 +5,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { X, CalendarIcon } from 'lucide-react';
@@ -93,7 +103,7 @@ export const AddRideForm = ({
 }: AddRideFormProps) => {
   const { user } = useAuth();
   const isSuperAdmin = user?.role === 'superadmin';
-  
+
   // Get current date and time for defaults
   const now = new Date();
   const currentTimeStr = now.toLocaleTimeString('en-US', {
@@ -105,14 +115,18 @@ export const AddRideForm = ({
   // If we are editing receive ride, otherwise blank form
   const [formData, setFormData] = useState({
     clientName: ride ? ride.clientName : '',
-    driverName: ride ? ride.driverName : (currentDriver?.name || user?.name || ''),
+    driverName: ride
+      ? ride.driverName
+      : currentDriver?.name || user?.name || '',
     car: ride ? ride.car : '',
     notes: ride ? ride.notes || '' : '',
   });
 
-  const [selectedDate, setSelectedDate] = useState<Date>(ride ? ride.date : now);
+  const [selectedDate, setSelectedDate] = useState<Date>(
+    ride ? ride.date : now,
+  );
   const [selectedTime, setSelectedTime] = useState<string>(
-    ride ? toTimeInputValue(ride.time) : currentTimeStr
+    ride ? toTimeInputValue(ride.time) : currentTimeStr,
   );
 
   // If ride changes (e.g. on modal open), update formData
@@ -188,11 +202,12 @@ export const AddRideForm = ({
                   disabled={!!ride}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a client" />
+                    <SelectValue placeholder='Select a client' />
                   </SelectTrigger>
                   <SelectContent className='z-50 bg-popover'>
                     {clients
                       .filter((client) => client.status === 'active')
+                      .sort((a, b) => a.name.localeCompare(b.name))
                       .map((client) => (
                         <SelectItem key={client.id} value={client.name}>
                           {client.name}
@@ -200,7 +215,6 @@ export const AddRideForm = ({
                       ))}
                   </SelectContent>
                 </Select>
-
               </div>
 
               <div className='space-y-2'>
@@ -211,12 +225,16 @@ export const AddRideForm = ({
                   disabled={!!ride || user?.role === 'driver'}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a driver" />
+                    <SelectValue placeholder='Select a driver' />
                   </SelectTrigger>
-                   <SelectContent className='z-50 bg-popover'>
+                  <SelectContent className='z-50 bg-popover'>
                     {[...drivers]
                       .sort((a, b) => {
-                        const preferred = formData.driverName || currentDriver?.name || user?.name || '';
+                        const preferred =
+                          formData.driverName ||
+                          currentDriver?.name ||
+                          user?.name ||
+                          '';
                         if (a.name === preferred) return -1;
                         if (b.name === preferred) return 1;
                         return 0;
@@ -237,7 +255,7 @@ export const AddRideForm = ({
                   onValueChange={(v) => handleInputChange('car', v)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a car" />
+                    <SelectValue placeholder='Select a car' />
                   </SelectTrigger>
                   <SelectContent className='z-50 bg-popover'>
                     {cars.map((car) => (
@@ -248,7 +266,6 @@ export const AddRideForm = ({
                   </SelectContent>
                 </Select>
               </div>
-
             </div>
 
             {/* Date and Time Selection for SuperAdmin */}
@@ -262,11 +279,15 @@ export const AddRideForm = ({
                         variant='outline'
                         className={cn(
                           'w-full justify-start text-left font-normal',
-                          !selectedDate && 'text-muted-foreground'
+                          !selectedDate && 'text-muted-foreground',
                         )}
                       >
                         <CalendarIcon className='mr-2 h-4 w-4' />
-                        {selectedDate ? format(selectedDate, 'PPP') : <span>Pick a date</span>}
+                        {selectedDate ? (
+                          format(selectedDate, 'PPP')
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className='w-auto p-0' align='start'>
@@ -316,10 +337,10 @@ export const AddRideForm = ({
 
             {isSuperAdmin && (
               <div className='bg-muted p-4 rounded-lg border border-border'>
-                <p className='text-sm text-muted-foreground'>
+                {/* <p className='text-sm text-muted-foreground'>
                   <strong>SuperAdmin Mode:</strong> You can customize the date and time for this ride.
                   Current defaults are set to now.
-                </p>
+                </p> */}
               </div>
             )}
 
