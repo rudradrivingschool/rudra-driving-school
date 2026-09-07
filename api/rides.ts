@@ -7,7 +7,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
 );
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -32,9 +32,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // Always request an exact count so the UI can display the true DB total.
         // For filtered queries the count reflects the filtered set (still accurate).
-        let dbQuery = supabase
-          .from('rides')
-          .select('*', { count: 'exact' });
+        let dbQuery = supabase.from('rides').select('*', { count: 'exact' });
 
         if (client_id) {
           dbQuery = dbQuery.eq('client_id', client_id as string);
@@ -44,11 +42,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           dbQuery = dbQuery.eq('driver_id', driver_id as string);
         }
 
-        const { data, error, count } = await dbQuery
-          .order('date', { ascending: false });
+        const { data, error, count } = await dbQuery.order('created_at', {
+          ascending: false,
+        });
 
         if (error) {
-          return res.status(500).json({ error: 'Failed to fetch rides', message: error.message });
+          return res
+            .status(500)
+            .json({ error: 'Failed to fetch rides', message: error.message });
         }
 
         // Filtered callers receive the plain array they have always expected.
@@ -61,7 +62,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         return res.status(200).json({
           rides: data || [],
-          totalCount: count ?? (data?.length ?? 0),
+          totalCount: count ?? data?.length ?? 0,
         });
       }
 
@@ -83,7 +84,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           .single();
 
         if (error) {
-          return res.status(500).json({ error: 'Failed to create ride', message: error.message });
+          return res
+            .status(500)
+            .json({ error: 'Failed to create ride', message: error.message });
         }
 
         return res.status(201).json(data);
@@ -113,7 +116,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           if (error.code === 'PGRST116') {
             return res.status(404).json({ error: 'Ride not found' });
           }
-          return res.status(500).json({ error: 'Failed to update ride', message: error.message });
+          return res
+            .status(500)
+            .json({ error: 'Failed to update ride', message: error.message });
         }
 
         return res.status(200).json(data);
@@ -128,7 +133,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           .select('id');
 
         if (error) {
-          return res.status(500).json({ error: 'Failed to delete ride', message: error.message });
+          return res
+            .status(500)
+            .json({ error: 'Failed to delete ride', message: error.message });
         }
 
         if (!data || data.length === 0) {
