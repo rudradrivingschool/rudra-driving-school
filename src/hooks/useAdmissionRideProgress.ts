@@ -1,6 +1,6 @@
 // Supabase response typed as any — PostgREST does not infer from service-role queries
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { apiClient } from "@/lib/api/client";
+import { apiClient } from '@/lib/api/client';
 
 /**
  * Updates the rides_completed count for a client in "admissions" table,
@@ -19,7 +19,7 @@ export async function updateAdmissionRideProgress(
 
     // Count completed rides
     const rides_completed = allRides.filter(
-      (r: any) => r.status === "completed",
+      (r: any) => r.status === 'completed',
     ).length;
 
     // Fetch client's admission data (scoped by id)
@@ -34,8 +34,8 @@ export async function updateAdmissionRideProgress(
     // Calculate new status based on completion
     const totalRides = (admissionRow as any).total_rides;
     const newStatus =
-      totalRides > 0 && rides_completed === totalRides
-        ? "Completed"
+      totalRides > 0 && rides_completed >= totalRides
+        ? 'Completed'
         : admissionRow.status;
 
     // Conditional no-op write: only update if values changed
@@ -60,6 +60,6 @@ export async function updateAdmissionRideProgress(
       onProgressUpdate();
     }
   } catch (error) {
-    console.error("Error updating admission ride progress:", error);
+    console.error('Error updating admission ride progress:', error);
   }
 }

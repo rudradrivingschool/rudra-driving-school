@@ -148,11 +148,13 @@ export const useRides = ({
     onSuccess: async ({ client_id }) => {
       toast.success('Ride added successfully!');
       queryClient.invalidateQueries({ queryKey: ['rides'] });
-      queryClient.invalidateQueries({ queryKey: ['admissions'] });
-      // Update progress for this client every insert, may complete them
+      // Update progress for this client every insert, may complete them.
+      // Admissions cache is invalidated AFTER the DB write so the refetch
+      // always sees the final status (including "Completed").
       if (client_id) {
         await updateAdmissionRideProgress(client_id, onProgressUpdate);
       }
+      queryClient.invalidateQueries({ queryKey: ['admissions'] });
     },
     onError: () => {
       toast.error('Failed to add ride');
@@ -230,15 +232,17 @@ export const useRides = ({
       // Determine affected clients for progress update
       const oldRide = rides.find((r) => r.id === rideId);
       const oldClientId = oldRide ? clientNameToId[oldRide.clientName] : null;
-      const clientChanged = oldRide && oldRide.clientName !== rideData.clientName;
+      const clientChanged =
+        oldRide && oldRide.clientName !== rideData.clientName;
 
       return { client_id, oldClientId, clientChanged };
     },
     onSuccess: async ({ client_id, oldClientId, clientChanged }) => {
       toast.success('Ride updated successfully!');
       queryClient.invalidateQueries({ queryKey: ['rides'] });
-      queryClient.invalidateQueries({ queryKey: ['admissions'] });
-      // Update progress for both old and new clients if they differ
+      // Update progress for both old and new clients if they differ.
+      // Admissions cache is invalidated AFTER all DB writes so the refetch
+      // always sees the final status (including "Completed").
       if (clientChanged && oldClientId) {
         await updateAdmissionRideProgress(oldClientId, onProgressUpdate);
       }
@@ -246,6 +250,7 @@ export const useRides = ({
       if (client_id) {
         await updateAdmissionRideProgress(client_id, onProgressUpdate);
       }
+      queryClient.invalidateQueries({ queryKey: ['admissions'] });
     },
     onError: () => {
       toast.error('Failed to update ride');
@@ -281,14 +286,16 @@ export const useRides = ({
     onSuccess: async ({ rideToDelete }) => {
       toast.success('Ride deleted successfully!');
       queryClient.invalidateQueries({ queryKey: ['rides'] });
-      queryClient.invalidateQueries({ queryKey: ['admissions'] });
-      // Update progress for the client after deletion
+      // Update progress for the client after deletion.
+      // Admissions cache is invalidated AFTER the DB write so the refetch
+      // always sees the final status (including "Completed").
       if (rideToDelete) {
         const client_id = clientNameToId[rideToDelete.clientName];
         if (client_id) {
           await updateAdmissionRideProgress(client_id, onProgressUpdate);
         }
       }
+      queryClient.invalidateQueries({ queryKey: ['admissions'] });
     },
     onError: () => {
       toast.error('Failed to delete ride');
